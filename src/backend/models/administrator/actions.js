@@ -6,27 +6,27 @@ const searchUser = (login) => {
     })
 }
 
-const listSpaces = (space, spaceName) => {
-    if (spaceName == undefined || spaceName == null) {
-        spaceName = '';
+const listOngs = (ong, ongName) => {
+    if (ongName == undefined || ongName == null) {
+        ongName = '';
     }
 
-    return selectConditions('spaces', '*', space, 'name', `%${spaceName}%`, 'id', 'asc');
+    return selectConditions('spaces', '*', ong, 'name', `%${ongName}%`, 'id', 'asc');
 }
 
-const spaceUpdateStatus = (newStatus, spaceId) => {
-    updateRow('spaces', { status: newStatus }, 'id',  spaceId);
+const ongUpdateStatus = (newStatus, ong) => {
+    updateRow('spaces', { status: newStatus }, 'id',  ong);
 }
 
-const selectSpaceById = (id) => {
+const selectOngById = (id) => {
     return selectRow('spaces', '*', 'id', id);
 }
 
-const insertSpace = (space) => {
-    insertRow('spaces', space);
+const insertOng = (ong) => {
+    insertRow('spaces', ong);
 }
 
-const updateSpace = (data) => {
+const updateOng = (data) => {
     updateRow('spaces', { 
         name: data.name,
         address: data.address,
@@ -49,10 +49,10 @@ const getAllReserves = (status) => {
 
 module.exports = {
     searchUser,
-    listSpaces,
-    spaceUpdateStatus,
-    selectSpaceById,
-    insertSpace,
-    updateSpace,
+    listOngs,
+    ongUpdateStatus,
+    selectOngById,
+    insertOng,
+    updateOng,
     getAllReserves
 }

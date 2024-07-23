@@ -28,16 +28,16 @@ const updatePassword = (newPassword, userId) => {
     updateRow('users', { password: newPassword }, 'id', userId);
 }
 
-const listSpaces = (space, spaceName) => {
-    if (spaceName == undefined || spaceName == null) {
-        spaceName = '';
+const listOngs = (ong, ongName) => {
+    if (ongName == undefined || ongName == null) {
+        ongName = '';
     }
 
-    return selectConditions('spaces', '*', space, 'name',`%${spaceName}%`, 'id',  'asc');
+    return selectConditions('spaces', '*', ong, 'name',`%${ongName}%`, 'id',  'asc');
 }
 
-const listSpace = (spaceId) => {
-    return selectConditions('spaces', '*', { id: spaceId, status: 1}, 'name', '%%', 'id', 'asc');
+const listOng = (ongId) => {
+    return selectConditions('spaces', '*', { id: ongId, status: 1}, 'name', '%%', 'id', 'asc');
 }
 
 const getUserReserves = (userId, statusReserve) => {
@@ -60,8 +60,8 @@ const reserveUpdate = (newStatus, reserveId) => {
     updateRow('spaces_reserved', { status: newStatus }, 'id', reserveId);
 }
 
-const checkSpaceAvailable = (spaceId, startDateAndTime, finalDateAndTime) => {
-    return checkReserve('spaces_reserved', '*', { space_id: spaceId, status: 1 }, startDateAndTime, finalDateAndTime, 'id', 'asc');
+const checkOngAvailable = (ongId, startDateAndTime, finalDateAndTime) => {
+    return checkReserve('spaces_reserved', '*', { space_id: ongId, status: 1 }, startDateAndTime, finalDateAndTime, 'id', 'asc');
 }
 
 const addUserReserve = (userID, insertData) => {
@@ -77,8 +77,8 @@ const addUserReserve = (userID, insertData) => {
     });
 }
 
-const checkRecorrencyReserve = (spaceId) => {
-    return selectRows('spaces_reserved', '*', { space_id: spaceId, status: 1 }, 'id', 'desc');
+const checkRecorrencyReserve = (ongId) => {
+    return selectRows('spaces_reserved', '*', { space_id: ongId, status: 1 }, 'id', 'desc');
 }
 
 const updateReserve = (reserveId, updateData) => {
@@ -102,12 +102,12 @@ module.exports = {
     updatePassToken,
     getPassToken,
     updatePassword,
-    listSpaces,
-    listSpace,
+    listOngs,
+    listOng,
     getUserReserves,
     getUserReserve,
     reserveUpdate,
-    checkSpaceAvailable,
+    checkOngAvailable,
     addUserReserve,
     checkRecorrencyReserve,
     updateReserve,

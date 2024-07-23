@@ -1,7 +1,6 @@
 const { createWebToken, decodedWebToken } = require('../security/token.js');
-const { selectConditions, updateRow, selectRow } = require('../models/utilQuerys.js');
 const { comparePassword } = require('../security/hash.js');
-const { searchUser, listSpaces, spaceUpdateStatus, selectSpaceById, insertSpace, updateSpace, getAllReserves } = require('../models/administrator/actions.js');
+const { searchUser, listOngs, ongUpdateStatus, selectOngById, insertOng, updateOng, getAllReserves } = require('../models/administrator/actions.js');
 const { insertLog, updateLastLogin } = require('../models/utilFunctions.js');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
@@ -59,13 +58,13 @@ const getOngs = async (request, response) => {
 
     const name = request.body.name;
 
-    const spaces = await listSpaces(data, name);
+    const ongs = await listOngs(data, name);
     
-    if (spaces.length == 0) {
+    if (ongs.length == 0) {
         return response.status(400).json({ message: 'Nenhuma ONG encontrada.'});
     }
 
-    return response.status(200).json({ message: 'Lista de ONGs', spaces: spaces });
+    return response.status(200).json({ message: 'Lista de ONGs', ongs: ongs });
 
 }
 
@@ -77,14 +76,14 @@ const getOng = async (request, response) => {
         return response.status(400).json({ message: 'É necessário enviar um id.'});
     }
     
-    const selectSpace = await selectSpaceById(data);
-    const space = selectSpace[0];
+    const selectOng = await selectOngById(data);
+    const ong = selectOng[0];
 
-    if (!space) {
+    if (!ong) {
         return response.status(400).json({ message: 'Nenhum dado foi encontrado.'});
     }
 
-    return response.status(200).json({ message: '', space: space });
+    return response.status(200).json({ message: '', ong: ong });
 }
 
 const addOng = async (request, response) => {
@@ -110,8 +109,8 @@ const addOng = async (request, response) => {
     const decodedToken = await decodedWebToken(jwt);   
     const data = {};
 
-    const spaceArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'contact', 'description'];
-    for (const item of spaceArr) {
+    const ongArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'contact', 'description'];
+    for (const item of ongArr) {
         if (request.body[item] == '' || request.body[item] == undefined || request.body[item] == null) {
             return response.status(400).json({ message: 'Os campos precisam está devidamente setados.' });
         }
@@ -121,7 +120,7 @@ const addOng = async (request, response) => {
 
     insertLog('logs_admin', decodedToken.userData.id, 'ADDONG', data);
 
-    insertSpace(data);
+    insertOng(data);
 
     return response.status(201).json({ message: 'Adicionado com sucesso.' });
 
@@ -139,16 +138,16 @@ const updateStatus = async (request, response) => {
         return response.status(400).json({ message: 'É necessário enviar um id.'});
     }
     
-    const selectSpace = await selectSpaceById(data.id);
-    const space = selectSpace[0];
+    const selectOng = await selectOngById(data.id);
+    const ong = selectOng[0];
 
-    if (!space) {
+    if (!ong) {
         return response.status(400).json({ message: 'Nenhum dado foi encontrado.' });
-    } else if (space && space.status == data.status) {
+    } else if (ong && ong.status == data.status) {
         return response.status(400).json({ message: 'Nenhum dado foi alterado.' });
     }
 
-    spaceUpdateStatus(data.status, data.id);
+    ongUpdateStatus(data.status, data.id);
 
     insertLog('logs_admin', decodedToken.userData.id, 'UPDATESTATUS', data);
 
@@ -179,23 +178,23 @@ const editOng = async (request, response) => {
     const decodedToken = await decodedWebToken(jwt);
     const data = request.body;
 
-    const spaceArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'contact', 'description'];
-    for (const item of spaceArr) {
+    const ongArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'contact', 'description'];
+    for (const item of ongArr) {
         if (request.body[item] == '' || request.body[item] == undefined || request.body[item] == null) {
             return response.status(400).json({ message: 'Os campos precisam está devidamente setados.' });
         }
     }
 
-    const selectSpace = await selectSpaceById(data.id);
-    const space = selectSpace[0];
+    const selectOng = await selectOngById(data.id);
+    const ong = selectOng[0];
 
-    if (!space) {
+    if (!ong) {
         return response.status(400).json({ message: 'ONG não encontrada!' });
     }
 
     insertLog('logs_admin', decodedToken.userData.id, 'EDITONG', data);
 
-    updateSpace(data);
+    updateOng(data);
 
     return response.status(200).json({ message: 'Dados editado com sucesso.' });
 }

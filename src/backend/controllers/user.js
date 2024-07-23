@@ -10,12 +10,12 @@ const {
     updatePassToken, 
     getPassToken, 
     updatePassword,
-    listSpaces,
-    listSpace,
+    listOngs,
+    listOng,
     getUserReserves,
     getUserReserve,
     reserveUpdate,
-    checkSpaceAvailable,
+    checkOngAvailable,
     addUserReserve,
     checkRecorrencyReserve,
     updateReserve,
@@ -77,8 +77,9 @@ const addUser = async (request, response) => {
 
     insertUser({
         name: data.name,
-        login: data.login,
+        login: data.email,
         email: data.email,
+        cpf: data.login,
         password: data.password,
         nivel: 1,
         status: 1
@@ -221,13 +222,13 @@ const getOngs = async (request, response) => {
     const name = request.body.name;
     
     data.status = 1;
-    const spaces = await listSpaces(data, name);
+    const ongs = await listOngs(data, name);
     
-    if (spaces.length == 0) {
+    if (ongs.length == 0) {
         return response.status(400).json({ message: 'Nenhum dado foi encontrado.' });
     }
 
-    return response.status(200).json({ message: 'Lista de ONGs', spaces: spaces });
+    return response.status(200).json({ message: 'Lista de ONGs', ongs: ongs });
 }
 
 const getOng = async (request, response) => {
@@ -238,14 +239,14 @@ const getOng = async (request, response) => {
         return response.status(400).json({ message: 'É necessário enviar um id!'});
     }
 
-    const selectSpace = await listSpace(data.id);
-    const space = selectSpace[0];
+    const selectOng = await listOng(data.id);
+    const ong = selectOng[0];
 
-    if (!space) {
+    if (!ong) {
         return response.status(400).json({ message: 'Nenhum dado foi encontrado.'});
     }
 
-    return response.status(200).json({ message: 'Sucesso', space: space });
+    return response.status(200).json({ message: 'Sucesso', ong: ong });
 }
 
 const getReserves = async (request, response) => {
@@ -332,14 +333,14 @@ const addReserve = async (request, response) => {
         start_reservation: '2024-03-05 08:00:00',
         final_reservation: '2024-03-05 12:00:00',
         qtd_hours: 4,
-        space_id: 1,
+        ong_id: 1,
         email: jose.maluquinho@gmail.com,
     }*/
     const jwt = request.headers['authorization'];
     const decodedToken = await decodedWebToken(jwt);
     const data = request.body;
 
-    const fieldArr = ['start_reservation', 'final_reservation', 'qtd_hours', 'space_id', 'email'];
+    const fieldArr = ['start_reservation', 'final_reservation', 'qtd_hours', 'ong_id', 'email'];
     for (const item of fieldArr) {
         if (data[item] == undefined || data[item] == '') {
             return response.status(400).json({ message: 'Todos os campos são obrigatórios!' });
@@ -353,7 +354,7 @@ const addReserve = async (request, response) => {
         return response.status(400).json({ message: 'Você não pode fazer um voluntariado com a data passada'});
     }
 
-    const selectRecorrency = await checkRecorrencyReserve(data.space_id);
+    const selectRecorrency = await checkRecorrencyReserve(data.ong_id);
     const recorrency = selectRecorrency[0];
 
     if (recorrency) {
@@ -379,16 +380,16 @@ const addReserve = async (request, response) => {
         return response.status(400).json({ message: 'A permanencia máxima de horas não pode ser maior que 8 horas.' });
     }
 
-    const space = await listSpace(data.space_id);
-    if (space.length == 0) {
+    const ong = await listOng(data.ong_id);
+    if (ong.length == 0) {
         return response.status(400).json({ message: 'Esta ONG não está disponível.'});
     }
 
-    data.total_prize = space[0].prize * diff.hours();
+    data.total_prize = ong[0].prize * diff.hours();
     data.user_id = decodedToken.userData.id;
     data.qtd_hours = diff.hours();
 
-    const selectReserve = await checkSpaceAvailable(data.space_id, data.start_reservation, data.final_reservation);
+    const selectReserve = await checkOngAvailable(data.ong_id, data.start_reservation, data.final_reservation);
     const reserve = selectReserve[0];    
 
     if (reserve) {
@@ -402,7 +403,7 @@ const addReserve = async (request, response) => {
     sendEmail(
         data.email, 
         'HandsHub - Agendamento de Voluntariado', 
-        `Seu voluntariado ${space[0].name} foi concluído com sucesso, este email será nosso nosso canal de contato para este voluntariado!
+        `Seu voluntariado ${ong[0].name} foi concluído com sucesso, este email será nosso nosso canal de contato para este voluntariado!
         
         Atenciosamente, Grupo Q Fiap`,
         );
@@ -464,15 +465,15 @@ const editReserve = async (request, response) => {
         return response.status(400).json({ message: 'A permanencia máxima de horas não pode ser maior que 8 horas.' });
     }
 
-    const space = await listSpace(reserve.spaces.id);
-    if (space.length == 0) {
+    const ong = await listOng(reserve.spaces.id);
+    if (ong.length == 0) {
         return response.status(400).json({ message: 'Esta ONG não está disponível.'});
     }
 
-    data.total_prize = space[0].prize * diff.hours();
+    data.total_prize = ong[0].prize * diff.hours();
     data.qtd_hours = diff.hours();
 
-    const selectAlreadyReserve = await checkSpaceAvailable(reserve.spaces.id, data.start_reservation, data.final_reservation);
+    const selectAlreadyReserve = await checkOngAvailable(reserve.spaces.id, data.start_reservation, data.final_reservation);
     const alreadyReserve = selectAlreadyReserve[0];    
 
     if (alreadyReserve && alreadyReserve.user_id != decodedToken.userData.id) {
@@ -486,7 +487,7 @@ const editReserve = async (request, response) => {
     sendEmail(
         data.email, 
         'HandsHub - Agendamento de Voluntariado',
-        `O voluntariado ${space[0].name} foi editado com sucesso.
+        `O voluntariado ${ong[0].name} foi editado com sucesso.
         
         Atenciosamente, Grupo Q Fiap`,
         );

@@ -58,7 +58,7 @@
             <i class="bi bi-plus-square mt-1 me-2 text-white" id="icon-plus-btn" style="line-height: 0;"></i>Nova ONG</button>
     </div>
     <main class="align-self-center overflow-x-auto mt-5" style="width: 95%; margin-left: 2.5%;">
-        <table class="table table-hover text-center" id="table-space">
+        <table class="table table-hover text-center" id="table-list">
             <thead>
               <tr>
                 <th scope="col">Nome</th>
@@ -69,7 +69,7 @@
                 <th scope="col">Ações</th>
               </tr>
             </thead>
-            <tbody id="tbody-space">
+            <tbody id="tbody-list">
 
             </tbody>
         </table>
@@ -91,8 +91,8 @@ import { verifyToken } from '../../../util/verifyToken.js';
 
 const token = localStorage.getItem('tokenAdminFiap');
 var loading = document.getElementById('loading');
-var table = document.getElementById('table-space');
-var tableBody = document.getElementById('tbody-space');
+var table = document.getElementById('table-list');
+var tableBody = document.getElementById('tbody-list');
 
 function list() {
     var name = document.getElementById('search-input').value;
@@ -128,7 +128,7 @@ function list() {
         }
         
         tableBody.innerHTML = '';
-        data.spaces.forEach(item => {
+        data.ongs.forEach(item => {
             const newRow = tableBody.insertRow();
 
             item.status = uiControlStatus[item.status];
@@ -177,11 +177,11 @@ searchBtn.addEventListener('click', () => {
 
 function editStatus(statusBtn) {
     statusBtn.addEventListener('click', () => {
-        let statusSpace = statusBtn.getAttribute('status');
+        let statusOng = statusBtn.getAttribute('status');
         const spaceId = statusBtn.getAttribute('id');
 
         let status = '';
-        statusSpace == 'Ativo' ?  status = 0 :  status = 1;
+        statusOng == 'Ativo' ?  status = 0 :  status = 1;
 
         const body = {
             id: spaceId,
@@ -205,13 +205,13 @@ function editStatus(statusBtn) {
             verifyToken('Atualizar Status', data.message, response.status);
             
             let iconBtn = document.getElementById(`icon-btn-${spaceId}`);
-            if (statusSpace == 'Ativo') {
+            if (statusOng == 'Ativo') {
                 let situation = statusBtn.parentElement.previousElementSibling;
                 iconBtn.classList.remove('bi-check2-circle' ,'text-success');
                 iconBtn.classList.add('bi-dash-circle', 'text-danger');
                 situation.textContent = 'Desativado';
                 statusBtn.setAttribute('status', 'Desativado');
-            } else if (statusSpace == 'Desativado') {
+            } else if (statusOng == 'Desativado') {
                 let situation = statusBtn.parentElement.previousElementSibling;
                 iconBtn.classList.remove('bi-dash-circle', 'text-danger');
                 iconBtn.classList.add('bi-check2-circle', 'text-success');

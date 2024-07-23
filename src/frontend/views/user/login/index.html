@@ -23,8 +23,7 @@
         <div id="current-form">
             <span class="text-align-center" style="font-size: 16px">Para entrar acesse sua conta</span>
             <form action="login-user" method="post" id="form-login" class="box-form">
-                <input class="form-control" id="input-login" type="number" placeholder="CPF" maxlength="11" required>
-                <small id="cpfAlertSmallElement"></small>
+                <input class="form-control" id="input-login" type="email" placeholder="Email" required>
                 <input class="form-control mt-3" type="password" id="input-password" placeholder="Senha" required>
                 <button type="submit" id="submit-button" class="btn mt-3 w-100"><b>Entrar</b></button>
             </form>
@@ -41,7 +40,6 @@
 import api from '../../../util/apiAddress.js';
 import { loadingAdd, loadingRemove } from '../../../util/loading.js';
 import { createTopModal } from '../../../components/modal.js';
-import { validateCharCpf, validateLenCpf } from '../../../util/validateCpf.js';
 
 var loginElement = document.getElementById('input-login');
 var form = document.getElementById('form-login');
@@ -51,11 +49,6 @@ form.addEventListener('submit', (event) => {
     const login = document.getElementById('input-login').value;
     const password = document.getElementById('input-password').value;
     var buttonSubmit = document.getElementById('submit-button');
-    var cpfAlertSmallElement = document.getElementById('cpfAlertSmallElement');
-
-    if (validateLenCpf(login, loginElement)) {
-        return;
-    }
     
     const body = {
         "login": login,
@@ -95,5 +88,4 @@ form.addEventListener('submit', (event) => {
     })
 });
 
-validateCharCpf('input-login'); 
 </script>

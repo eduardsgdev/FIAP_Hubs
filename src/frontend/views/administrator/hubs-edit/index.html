@@ -145,12 +145,12 @@ var divImage = document.getElementById(`image-div-1`);
 
 const queryString = new URLSearchParams(window.location.search);
 const getValueQueryString = (param) => queryString.get(param);
-const spaceId = getValueQueryString('id');
+const ongId = getValueQueryString('id');
 
 let click = '';
 let sequencialId = '';
-function getSpace() {
-    if(spaceId > 0) {
+function getOng() {
+    if(ongId > 0) {
         const requestOptions = {
             method: 'GET',
             headers: {
@@ -160,7 +160,7 @@ function getSpace() {
             mode: 'cors'
         }
 
-        fetch(api + `/src/backend/controllers/administrator/getOng?id=${spaceId}`, requestOptions)
+        fetch(api + `/src/backend/controllers/administrator/getOng?id=${ongId}`, requestOptions)
         .then(async response => {
             const data = await response.json();
             verifyToken('Editar ONG', data.message, response.status);
@@ -168,21 +168,21 @@ function getSpace() {
                 return createTopModal('Editar ONG', data.message, 'text-bg-danger');
             }
             
-            document.getElementById('name').value = data.space.name;
-            document.getElementById('addrees').value = data.space.address;
-            document.getElementById('city').value = data.space.city;
-            document.getElementById('state').value = data.space.state;
-            document.getElementById('status').value = data.space.status;
-            document.getElementById('type').value = data.space.type;
-            document.getElementById('zip-code').value = data.space.zip_code;
-            document.getElementById('capacity').value = data.space.capacity;
-            document.getElementById('prize').value = data.space.prize;
-            document.getElementById('contact').value = data.space.contact;
-            document.getElementById('description').value = data.space.description;
-            document.getElementById('image-input-1').value = data.space.image[0] == undefined ? '':  data.space.image[0];
+            document.getElementById('name').value = data.ong.name;
+            document.getElementById('addrees').value = data.ong.address;
+            document.getElementById('city').value = data.ong.city;
+            document.getElementById('state').value = data.ong.state;
+            document.getElementById('status').value = data.ong.status;
+            document.getElementById('type').value = data.ong.type;
+            document.getElementById('zip-code').value = data.ong.zip_code;
+            document.getElementById('capacity').value = data.ong.capacity;
+            document.getElementById('prize').value = data.ong.prize;
+            document.getElementById('contact').value = data.ong.contact;
+            document.getElementById('description').value = data.ong.description;
+            document.getElementById('image-input-1').value = data.ong.image[0] == undefined ? '':  data.ong.image[0];
 
             let idGetDivs = 0;
-            for (let index in data.space.image) {
+            for (let index in data.ong.image) {
                 if (index > 0) {
                     divImage = document.getElementById(`image-div-${index}`);
                     idGetDivs = parseInt(index) + 1;
@@ -190,7 +190,7 @@ function getSpace() {
                         <div class="col-md-6" id="image-div-${idGetDivs}">
                             <div class="input-group m-2">
                                 <i class="input-group-text bi bi-images"></i>
-                                <input type="link" id="image-input-${idGetDivs}" class="form-control images-input" placeholder="https://suaurl.com" value="${data.space.image[index]}" required></input>
+                                <input type="link" id="image-input-${idGetDivs}" class="form-control images-input" placeholder="https://suaurl.com" value="${data.ong.image[index]}" required></input>
                                 <button class="input-group-text bi bi-dash-lg" id="plus-image-${idGetDivs}"></button>
                             </div>
                         </div>
@@ -201,7 +201,7 @@ function getSpace() {
             sequencialId = idGetDivs;
         });
     }
-}getSpace();
+}getOng();
 
 var addImageBtn = document.getElementById(`plus-image-1`);
 addImageBtn.addEventListener('click', () => {
@@ -286,7 +286,7 @@ form.addEventListener('submit', (event) => {
     }
     
     const body = {
-        id: spaceId,
+        id: ongId,
         name: name,
         address: address,
         city: city,

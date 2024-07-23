@@ -129,47 +129,47 @@ function list() {
         }
 
         //Slice the array to create the load more logic.
-        let arraySpaces = data.spaces.slice(0, showHome.qtdShow);
-        data.spaces.length < showHome.qtdShow ? loadingMoreBtn.disabled = true : loadingMoreBtn.disabled = false;
+        let arrayOngs = data.ongs.slice(0, showHome.qtdShow);
+        data.ongs.length < showHome.qtdShow ? loadingMoreBtn.disabled = true : loadingMoreBtn.disabled = false;
         loadingMoreBtn.addEventListener('click', () => {
             //console.log(showHome.click++);
             showHome.qtdShow = showHome.qtdShow + numberToShow;
 
-            if (showHome.qtdShow < data.spaces.length) {
-                arraySpaces = data.spaces.slice((showHome.qtdShow - numberToShow), showHome.qtdShow);
+            if (showHome.qtdShow < data.ongs.length) {
+                arrayOngs = data.ongs.slice((showHome.qtdShow - numberToShow), showHome.qtdShow);
                 loadingMoreBtn.disabled = false;
             } else {
-                arraySpaces = data.spaces.slice((showHome.qtdShow - numberToShow) , showHome.qtdShow + 1);
+                arrayOngs = data.ongs.slice((showHome.qtdShow - numberToShow) , showHome.qtdShow + 1);
                 loadingMoreBtn.disabled = true;
             }
             render();
         });
          
         function render() {
-            arraySpaces.forEach(space => {
+            arrayOngs.forEach(ong => {
                 const card = document.createElement('div');
                 card.className = 'card m-2 card-pass border';
                 card.style.width = '23rem';
                 card.innerHTML = `
-                    <img src="${space.image[0]}" class="img-fluid w-100" style="height: 300px;" alt="${space.name}">
-                    <div class="btn card-body" onclick="window.location.href = '../reserve-menu/index.html?id=${space.id}';">
-                        <h5 class="card-title text-truncate me-2 d-flex justify-content-start">${space.name}</h5>
+                    <img src="${ong.image[0]}" class="img-fluid w-100" style="height: 300px;" alt="${ong.name}">
+                    <div class="btn card-body" onclick="window.location.href = '../reserve-menu/index.html?id=${ong.id}';">
+                        <h5 class="card-title text-truncate me-2 d-flex justify-content-start">${ong.name}</h5>
                         <div class="d-flex justify-content-between">
                             <div>
-                                <span class="card-text" style="font-size: small">${space.address}  <i class="bi bi-signpost-split"></i></span>
+                                <span class="card-text" style="font-size: small">${ong.address}  <i class="bi bi-signpost-split"></i></span>
                             </div>
                             <div class="border rounded p-1" style="font-size: small">
-                                <span class="card-text fw-bold bi bi-people-fill"> ${space.capacity}</span>
+                                <span class="card-text fw-bold bi bi-people-fill"> ${ong.capacity}</span>
                             </div>
                         </div>
                         <div class="d-flex justify-content-between mt-3" style="font-size: small">
-                            <span class="card-text">${space.city + ", " + space.state}<i class="bi bi-geo-alt"></i></span>
-                            <span class="card-text">${space.type} <i class="bi-house-heart-fill"></i></span>
+                            <span class="card-text">${ong.city + ", " + ong.state}<i class="bi bi-geo-alt"></i></span>
+                            <span class="card-text">${ong.type} <i class="bi-house-heart-fill"></i></span>
                         </div>
                         <div class="d-flex justify-content-between mt-4 fs-6">
-                            <button id="reserve-${space.id}" 
+                            <button id="reserve-${ong.id}" 
                                 class="btn btn-outline-dark btns-list-user"><i class="bi bi-bookmark-plus"></i> Ver Detalhes</button>
-                            <span id="prize-card">$ ${space.prize}</span>
+                            <span id="prize-card">$ ${ong.prize}</span>
                         </div>
                     </div>`;
                 deckCards.appendChild(card);
