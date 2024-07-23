@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="body-user">
+    <div class="img-inicio-user">
+        <div class="box-background-content">
+            <img src="../../../imgs/space.png" class="logo-user img-fluid d-block" alt="Logo branca da Space.">
+            <div class="logo-txt mb-4">Conectando <b>mãos</b> que acolhem</div>
+        </div>
+    </div>
+    <div class="box-input">
+        <div class="box-text">
+            <span><b>Bem vindo(a)</b></span><br>
+        </div>
+        <div id="current-form">
+            <span class="text-align-center" style="font-size: 16px">Realize seu cadastro</span>
+            <form action="register-user" method="post" id="form-register" class="box-form">
+                <input class="form-control mt-3" id="input-name" type="text" placeholder="Nome" required>
+                <input class="form-control mt-3" id="input-login" type="number" placeholder="CPF" required>
+                <small id="cpfAlertSmallElement"></small>
+                <input class="form-control mt-3" id="input-email" type="email" placeholder="Email" required>
+                <input class="form-control mt-3" id="input-password" type="password" placeholder="Senha" required>
+                <input class="form-control mt-3" id="input-confirm-password"  type="password" placeholder="Confirmar Senha" required>
+                <button type="submit" id ="submit-button" class="btn mt-3 w-100"><b>Cadastrar</b></button>
+            </form>
+        </div>
+        <div class="mt-5 text-start">
+            <span>Já possui uma conta?</span>
+            <a href="../login/index.html">Entrar</a><br>
+            <a href="../password-reset/index.html">Esqueceu sua senha?</a>
+        </div>
+    </div>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { validateCharCpf, validateLenCpf } from '../../../util/validateCpf.js';
+
+var buttonSubmit = document.getElementById('submit-button');
+var loginElement = document.getElementById('input-login');
+var form = document.getElementById('form-register');
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const name = document.getElementById('input-name').value;
+    const login = document.getElementById('input-login').value;
+    const email = document.getElementById('input-email').value;
+    const password = document.getElementById('input-password').value;
+    const passwordConfirm = document.getElementById('input-confirm-password').value;
+
+    if (validateLenCpf(login, loginElement)) {
+        return;
+    }
+    
+    const body = {
+        "name": name,
+        "login": login,
+        "email": email,
+        "password": password,
+        "confirm_password": passwordConfirm,
+    }
+
+    const requestOptions = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    buttonSubmit.disabled = true;
+    loadingAdd(buttonSubmit);
+    
+    fetch(api + '/src/backend/controllers/user/addUser', requestOptions)
+    .then(async response => {
+        const feedback = await response.json();
+        if (response.status == 201) {
+            setTimeout(() => {
+                createTopModal('Cadastro', feedback.message, 'text-bg-success');
+                cleanInputsArray(['input-name', 'input-login', 'input-email', 'input-password', 'input-confirm-password']);
+            }, 1000);
+        } else {
+            createTopModal('Cadastro', feedback.message, 'text-bg-danger');
+        }
+    })
+    .finally(() => {
+        setTimeout(() => {
+            buttonSubmit.disabled = false;
+            loadingRemove(buttonSubmit);
+        },1000)
+    })
+});    
+
+validateCharCpf('input-login');
+</script>

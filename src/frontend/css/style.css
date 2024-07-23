@@ -1,0 +1,208 @@
+.body-login {
+    background-image: url('../imgs/space_background.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.box-login {
+    width: 80%;
+    max-width: 500px;
+    border-radius: 60px;
+    background-color: rgba(200, 200, 200, 0.3);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    margin: auto;
+    margin-top: 10%;
+    padding: 20px 20px 30px;
+}
+@media only screen and (max-width: 788px) {
+    .box-login.box-internal-login {
+        width: 90vw;
+        height: 55vh; 
+        margin: 10% auto;
+        padding-top: 10%;
+    }
+}
+.box-internal-login {
+    color: white;
+    text-align: start;
+    vertical-align: top;
+    text-wrap: nowrap;
+}
+.a-side-ref {
+    text-decoration: none;
+}
+.body-user {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.img-inicio-user {
+    display: block;
+    background-image: url('../imgs/space_background.png');
+    background-size: cover;
+    height: 100%;
+    width: 50%;
+}
+.logo-user {
+    margin-top: 30%;
+    margin-left: 10%;
+}
+.logo-txt {
+    margin-left: 10%;
+    margin-top: 5%;
+    font-size: 50px;
+    color: white;
+}
+.box-input {
+    width: 80%;
+    max-width: 500px;
+    height: 500px;
+    display: block;
+    margin: 2% auto;
+    padding: 20px 20px 30px;
+}
+.box-text {
+    margin-top: 5%;
+    font-size: 32px;
+    color: black;
+}
+.box-form {
+    margin-top: 30px;
+}
+.box-background-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 75%;
+    width: 75%;
+}
+@media (max-width: 800px) {
+    .img-inicio-user {
+        background-image: none;
+        background-repeat: initial;
+        background-position: initial;
+        background-size: initial;
+        position: absolute;
+        top: 0;
+        background-color: #8FBFD6;
+        width: 100%;
+        height: 100px;
+        text-align: center;
+        padding: 6px 10px;
+    }
+    .logo-txt {
+        font-size: 18px;
+        color: black;
+        margin-left: 3%;
+        position: relative;
+        margin-top: 30px;
+    }
+    .logo-user {
+        margin-top: 2px;
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .box-text {
+        margin-top: 28%;
+        font-size: 32px;
+        color: black;
+        text-align: center;
+    }
+    .box-background-content {
+        height: initial;
+        width: initial;
+    }
+}
+#submit-button {
+    background-color: #004AAD;
+    color: white;
+}
+#clean-button {
+    background-color: #357FDA;
+    color: white;
+}
+#clean-button:hover, #submit-button:hover, #new-space:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+@media only screen and (max-width: 991px) {
+    #filters-space-list {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 2px;
+    }
+}
+.card-pass:hover {
+    transform: scale(1.2);
+    z-index: 2;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+@media (max-width: 900px) {
+    .card-pass:hover {
+        transform: scale(1.1);
+    }
+}
+@media (max-width: 750px) {
+    .space-details {
+        display: inline-block;
+    }
+}
+@media (min-width: 880px) {
+    .space-details {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+#prize-card:hover {
+    color: red;
+}
+#img-space:hover {
+    cursor: pointer;
+}
+.pointer {
+    cursor: pointer;
+}
+.reserve-menu-background, .images-details {
+    height: 660px;
+    text-align: center;
+}
+@media (max-width: 850px) {
+    .reserve-menu-background {
+        height: 330px;
+    }
+    .images-details {
+        height: 330px;
+        background-position: center;
+        background-size: cover;
+    }
+}
+.card-pass-r:hover {
+    transform: scale(1.01);
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+@media (max-width: 735px) {
+    #schedule {
+        display: flex;
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 375px) {
+    .btns-reserve-user {
+        font-size: x-small;
+    }
+}
+@media (max-width: 450px) {
+    .icon-x-custom {
+        display: none;
+    }
+}

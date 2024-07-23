@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resetar Senha - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="body-user">
+    <div class="img-inicio-user">
+        <div class="box-background-content">
+            <img src="../../../imgs/space.png" class="logo-user img-fluid d-block" alt="Logo Branca da Space.">
+            <div class="logo-txt mb-4">Conectando <b>mãos</b> que acolhem</div>
+        </div>
+    </div>
+    <div class="box-input">
+        <div class="box-text">
+            <span><b>HandsHub</b></span><br>
+        </div>
+        <div id="current-form">
+            <span class="text-align-center" id="text-content" style="font-size: 16px">Um email de recuperação será enviado</span>
+            <div id="loading" class="d-flex justify-content-center"></div>
+            <form action="resend-password-user" method="post" id="form-resend-password" class="box-form">
+                <input class="form-control mt-3" id="input-email" type="email" placeholder="Email" required>
+                <button type="submit" id="submit-button" class="btn mt-3 w-100"><b>Enviar</b></button>
+            </form>
+        </div>
+        <div class="mt-5 text-start">
+            <span>Não possui uma conta?</span>
+            <a href="../register/index.html">Cadastre-se!</a><br>
+            <span>Já possui uma conta?</span>
+            <a href="../login/index.html">Entrar</a><br>
+        </div>
+    </div>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+
+var buttonSubmit = document.getElementById('submit-button');
+var form = document.getElementById('form-resend-password');
+var subtitle = document.getElementById('text-content');
+var loading = document.getElementById('loading');
+
+const queryString = new URLSearchParams(window.location.search);
+const getValueQueryString = (nameParameter) => queryString.get(nameParameter);
+const uniqId = getValueQueryString('id');
+
+if (uniqId && uniqId.length == 36) {
+    document.title = 'Alterar Senha - Space';
+    subtitle.textContent = 'Digite uma nova senha'
+    document.getElementById('input-email').remove();
+    buttonSubmit.disabled = true;
+    loadingAdd(loading);
+    setTimeout(() => {
+        var loginInput = document.createElement('input');
+        loginInput.className = 'form-control mt-3';
+        loginInput.id = 'input-password';
+        loginInput.type = 'password';
+        loginInput.placeholder = 'Senha';
+        loginInput.required = true;
+        form.insertBefore(loginInput, document.getElementById('submit-button'));
+    
+        var passwordInput = document.createElement('input');
+        passwordInput.className = 'form-control mt-3';
+        passwordInput.id = 'input-confirm-password';
+        passwordInput.type = 'password';
+        passwordInput.placeholder = 'Confirme Senha';
+        passwordInput.required = true;
+        form.insertBefore(passwordInput, document.getElementById('submit-button'));
+        loadingRemove(loading);
+        buttonSubmit.disabled = false;
+    }, 200)
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const password = document.getElementById('input-password').value;
+        const passwordConfirm = document.getElementById('input-confirm-password').value;
+    
+        const body = {
+            "token": uniqId,
+            "password": password,
+            "confirm_password": passwordConfirm
+        }
+    
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            body: JSON.stringify(body)
+        }
+    
+        buttonSubmit.disabled = true;
+        loadingAdd(buttonSubmit);
+        
+        fetch(api + '/src/backend/controllers/user/changePassword', requestOptions)
+        .then(async response => {
+            const feedback = await response.json();
+            if (response.status == 200) {
+                setTimeout(() => {
+                    createTopModal('Alteração de Senha', feedback.message, 'text-bg-success');
+                    cleanInputsArray(['input-password', 'input-confirm-password']);
+                }, 1000);
+            } else {
+                createTopModal('Alteração de Senha', feedback.message, 'text-bg-danger');
+            }
+        })
+        .finally(() => {
+            setTimeout(() => {
+                buttonSubmit.disabled = false;
+                loadingRemove(buttonSubmit);
+            }, 1000)
+        })
+    });
+    
+} else {
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const email = document.getElementById('input-email').value;
+    
+        const body = {
+            "email": email,
+        }
+    
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            body: JSON.stringify(body)
+        }
+    
+        buttonSubmit.disabled = true;
+        loadingAdd(buttonSubmit);
+        
+        fetch(api + '/src/backend/controllers/user/resetPassword', requestOptions)
+        .then(async response => {
+            const feedback = await response.json();
+            if (response.status == 200) {
+                setTimeout(() => {
+                    createTopModal('Recuperação de Senha', feedback.message, 'text-bg-success');
+                    cleanInputsArray(['input-email']);
+                }, 1000);
+            } else {
+                createTopModal('Recuperação de Senha', feedback.message, 'text-bg-danger');
+            }
+        })
+        .finally(() => {
+            setTimeout(() => {
+                buttonSubmit.disabled = false;
+                loadingRemove(buttonSubmit);
+            }, 1000)
+        })
+    });
+}
+
+
+</script>

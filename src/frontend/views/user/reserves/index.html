@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voluntariado - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="body-reserves">
+    <nav class="navbar navbar-expand-lg bg-black">
+        <div class="container-fluid">
+            <img id="img-space" src="../../../imgs/space.png" onclick="window.location.href = '../space-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <div class="d-flex justify-content-end" style="font-size: x-large;">
+                <ul class="navbar-nav me-auto">
+                    <li class="d-block d-inline-flex m-3">
+                        <a id="user-reserves">
+                            <i class="bi bi-luggage text-primary d-flex justify-content-center pointer" id="bag"></i>
+                            <span class="d-flex text-primary mt-1" style="font-size: small;">Minhas ONGs</span>
+                        </a>
+                        <a id="user-logout" class="ms-3" onclick="localStorage.removeItem('tokenUserFiap'); window.location.href = '../login/index.html';" style="text-decoration: none;">
+                            <i class="bi bi-box-arrow-right text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white d-flex justify-content-center me-2 mt-1" style="font-size: small;">Sair</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="list-reserves">
+        <h2 class="ms-3 mt-5">Reservas Ativas: </h2>
+        <div class="d-flex justify-content-center">
+            <div id="list-reserves-user" class="mt-5 ms-2 me-4 d-block w-100 ">
+                <!-- Here is the array with actives the spaces -->
+            </div>
+        </div>
+        <h2 class="ms-3 mt-5">Histórico: </h2>
+        <div class="d-flex justify-content-center">
+            <div id="list-reserves-user-2" class="mt-5 ms-2 me-4 d-block w-100 ">
+                <!-- Here is the array with inactives the spaces -->
+            </div>
+        </div>
+    </div>
+    <div id="loading" class="d-flex justify-content-center"></div>
+    <footer class="mt-5 blockquote-footer bottom">
+        <span class="d-flex justify-content-center fw-bold">Grupo Q - FIAP</span>
+        <span class="d-flex justify-content-center">2024 -  ©Todos os direitos reservados. :D</span>
+    </footer>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { verifyToken } from '../../../util/verifyToken.js';
+import { brazilianDate } from '../../../util/dateFormater.js';
+
+const token = localStorage.getItem('tokenUserFiap');
+
+var deckCardsActives = document.getElementById('list-reserves-user');
+var deckCardsInactives = document.getElementById('list-reserves-user-2');
+var loading = document.getElementById('loading');
+var loadingMoreBtn = document.getElementById('loading-more');
+
+function listReserves() {
+    deckCardsActives.innerHTML = '';
+    deckCardsInactives.innerHTML = '';
+    loadingAdd(loading);
+    const body = {
+        status: "all"
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    fetch(api + '/src/backend/controllers/user/getReserves', requestOptions)
+    .then(async response => { 
+        const data = await response.json();
+
+        verifyToken('Listar Reservas', data.message, response.status);
+
+        if (response.status == 400) {
+            return uiInfoToCards(deckCardsActives, deckCardsInactives);
+        }
+
+        const now = new Date();
+
+        data.reserves.forEach(reserves => {
+            let reserveTimestamp = new Date(reserves.start_reservation);
+            const card = document.createElement('div');
+            card.className = 'card m-2 card-pass-r border w-100';
+            card.innerHTML = `
+                <div class="card-body ${isActive(reserves.status, reserveTimestamp.getTime()).classBtn == true ? 'btn' : ''}" id="${reserves.spaces.id + "-" + reserves.id}">
+                    <h5 class="card-title text-truncate me-2 d-flex justify-content-start m-1">${reserves.spaces.name}</h5>
+                    <div class="d-flex justify-content-between mt-2">
+                        <div>
+                            <span class="card-text" style="font-size: small m-1">${reserves.spaces.address}  <i class="bi bi-signpost-split m-1"></i></span>
+                        </div>
+                        <div class="border rounded p-1" style="font-size: small">
+                            <span class="card-text fw-bold bi bi-people-fill m-1"> ${reserves.spaces.capacity}</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3" style="font-size: small">
+                        <span class="card-text m-1">${reserves.spaces.city + ", " + reserves.spaces.state} <i class="bi bi-geo-alt m-1"></i></span>
+                        <span class="card-text m-1">${reserves.spaces.type} <i class="bi-house-heart-fill m-1"></i></span>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3" style="font-size: small">
+                        <span class="card-text m-1">Inicio: ${brazilianDate(reserves.start_reservation)} <i class="bi bi-calendar-check m-1"></i></span>
+                        <span class="card-text m-1">Término: ${brazilianDate(reserves.final_reservation)} <i class="bi bi-calendar-x m-1"></i></span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between m-3 fs-5">
+                    <button id="${reserves.id}"
+                        class="btn btn-outline-danger btns-reserve-user mb-2" ${isActive(reserves.status, reserveTimestamp.getTime()).disabled}>
+                        <i class="bi bi-x-circle icon-x-custom m-1"></i> ${isActive(reserves.status, reserveTimestamp.getTime()).status}</button>
+                    <span id="prize-card">Total: $ ${reserves.total_prize}</span>
+                </div>
+                `;
+            
+            if (reserves.status == 0 || (reserveTimestamp.getTime() < now.getTime())) {
+                deckCardsInactives.appendChild(card);
+            } else {
+                deckCardsActives.appendChild(card);
+            }
+        });
+        uiInfoToCards(deckCardsActives, deckCardsInactives);
+
+        var cancelReserveBtn = document.getElementsByClassName('btns-reserve-user');
+        var cardBodyBtns = document.getElementsByClassName('card-body');
+        setBtnsCancel(cancelReserveBtn);
+        editReserve(cardBodyBtns);
+        
+    }).finally(() => {
+        loadingRemove(loading);
+    })
+}listReserves();
+
+function isActive(status, timeStartReserve = false) {
+    const now = new Date();
+
+    if (status == 1 && timeStartReserve > now.getTime()) {
+        return { 
+            status: 'Cancelar',
+            classBtn: true
+        }
+    }
+
+    if (status == 1 && timeStartReserve < now.getTime()) {
+        return {
+            disabled: 'disabled',
+            status: 'Finalizado'
+        }
+    }
+    
+    return { 
+        disabled: 'disabled',
+        status: 'Cancelado'
+    }
+}
+
+function editReserve(cards) {
+    Array.from(cards).forEach(reserve => {
+        reserve.addEventListener('click', () => {
+            let spaceAndReserveId = reserve.id;
+            let parts = spaceAndReserveId.split('-');
+            if (reserve.classList.contains('btn')) {
+                window.location.href = `../booking-schedule/index.html?id=${parts[0]}&reserve=${parts[1]}`;
+            }
+        });
+    });
+}
+
+let idReserve = '';
+function setBtnsCancel(reserves) {
+    Array.from(reserves).forEach(reserve => {
+        reserve.addEventListener('click', () => {
+            idReserve = reserve.id;
+            createTopModal('Cancelar Voluntariado', 'Essa ação é irreversível!', 'text-bg-danger', 'Continuar');
+        });
+    });
+}
+
+document.addEventListener('click', (btn) => {
+
+    if (btn.target.textContent === 'Continuar') {
+        
+        const body = {
+            reserve_id: idReserve,
+            status: "0"
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+            'authorization': token,
+            'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            body: JSON.stringify(body)
+        }
+
+        fetch(api + '/src/backend/controllers/user/reserveCancel', requestOptions)
+        .then(async response => { 
+            const data = await response.json();
+
+            verifyToken('Cancelar Voluntariado', data.message, response.status);
+
+            if (response.status == 400) {
+                return createTopModal('Cancelar Voluntariado', data.message, 'text-bg-danger');
+            }
+            setTimeout(() => {
+                listReserves();
+            }, 2000);
+
+            createTopModal('Cancelar Voluntariado', data.message, 'text-bg-success');
+
+        });
+    }
+});
+
+function uiInfoToCards(elementsActives, elementsHistory) {
+    elementsActives.getElementsByClassName('card-pass-r').length == 0 
+        ? elementsActives.innerHTML = `<div class="alert alert-primary ms-3 bi bi-info-circle" role="alert"> Você não tem nenhuma reserva ativa!</div>`
+        : '';
+    elementsHistory.getElementsByClassName('card-pass-r').length == 0 
+        ? elementsHistory.innerHTML = `<div class="alert alert-primary ms-3 bi bi-info-circle" role="alert"> Você não possui histórico!</div>`
+        : '';
+}
+        
+</script>

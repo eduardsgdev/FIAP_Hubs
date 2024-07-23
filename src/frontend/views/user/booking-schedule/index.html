@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento Voluntariado - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+</head>
+<body class="body-booking-schedule">
+    <nav class="navbar navbar-expand-lg bg-black">
+        <div class="container-fluid">
+            <img id="img-space" src="../../../imgs/space.png" onclick="window.location.href = '../space-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <div class="d-flex justify-content-end" style="font-size: x-large;">
+                <ul class="navbar-nav me-auto">
+                    <li class="d-block d-inline-flex m-3">
+                        <a id="user-reserves" onclick="window.location.href = '../reserves/index.html';">
+                            <i class="bi bi-luggage text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white mt-1" style="font-size: small;">Minhas ONGs</span>
+                        </a>
+                        <a id="user-logout" class="ms-3" onclick="localStorage.removeItem('tokenUserFiap'); window.location.href = '../login/index.html';" style="text-decoration: none;">
+                            <i class="bi bi-box-arrow-right text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white d-flex justify-content-center me-2 mt-1" style="font-size: small;">Sair</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <h1 class="mt-4 ms-3 fw-bold">Agendamento:</h1>
+    <main class="d-flex justify-content-center me-2" id="schedule">
+        <div id="schedule-booking-user" class="mt-3 ms-3 me-3">
+            <!-- Here is the obj with the space -->
+        </div>
+        <form action="add-reserve" method='POST' class="mt-3" id="add-reserve">
+            <div class="container justify-content-center" id="container-reserve-register">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-currency-dollar"></i>
+                                <input type="number" id="prize" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-calendar-day"></i> 
+                                <input type="text" class="form-control" id="start-date" placeholder="Data Início" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-stopwatch"></i>
+                                <select class="form-control form-select" id="qtt-hours" placeholder="Qtd. Horas" required>
+                                    <option value="1" selected>Uma Hora</option>
+                                    <option value="2">Duas Horas</option>
+                                    <option value="3">Três Horas</option>
+                                    <option value="4">Quatro Horas</option>
+                                    <option value="5">Cinco Horas</option>
+                                    <option value="6">Seis Horas</option>
+                                    <option value="7">Sete Horas</option>
+                                    <option value="8">Oito Horas</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-calendar-check"></i> 
+                                <input type="text" class="form-control" id="final-date" placeholder="Data Final" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-cash-coin text-danger"></i> 
+                                <input type="number" class="form-control text-danger" id="reserve-total-value" placeholder="Valor Total" required disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="ms-3 mt-2" style="font-size: small;" for="email">Você está se voluntariando para ajudar a ONG, mas você pode encaminhar para outro email e convidar seus amigos a ajudar também: </label for="email">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-envelope-at"></i>
+                                <input type="email" class="form-control" id="email" placeholder="Email do Responsável" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group m-2 d-flex justify-content-end">
+                                <button type="button" id="clean-button" class="btn m-1 text-white d-flex" onclick="window.location.href = '../space-list/index.html';">
+                                    <i class="bi bi-arrow-left mt-1 me-2 text-white" style="line-height: 0;"></i>Não Quero</button>
+                                <button type="submit" id="submit-button" class="btn m-1 text-white d-flex">
+                                    <i class="bi bi-floppy mt-1 me-2 text-white" style="line-height: 0;"></i>Voluntariar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form> 
+    </main>
+    <hr class="ms-1 my-4 mt-4 ms-2 me-2" id="row-divider">
+    <footer class="mt-5 blockquote-footer bottom">
+        <span class="d-flex justify-content-center fw-bold">Grupo Q - FIAP</span>
+        <span class="d-flex justify-content-center">2024 -  ©Todos os direitos reservados. :D</span>
+    </footer>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { verifyToken } from '../../../util/verifyToken.js';
+import { brazilianDate } from '../../../util/dateFormater.js';
+import { timestampConverter, convertToAmericanFormat } from '../../../util/timestamp.js';
+
+const token = localStorage.getItem('tokenUserFiap');
+const email = localStorage.getItem('email');
+document.getElementById('email').value = email;
+
+
+const queryString = new URLSearchParams(window.location.search);
+const getValueQueryString = (param) => queryString.get(param);
+const spaceId = getValueQueryString('id');
+const reserveId = getValueQueryString('reserve');
+
+var deckCards = document.getElementById('schedule-booking-user');
+var prize = document.getElementById('prize');
+
+function getSpace() {
+    if (!spaceId || spaceId == 0) {
+        setTimeout(() => {
+            window.location.href = '../space-list/index.html';
+        }, 2000);
+        return createTopModal('Voluntariar', 'Indisponível!', 'text-bg-danger');
+    }
+    const body = {
+        id: spaceId
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    fetch(api + '/src/backend/controllers/user/getSpace', requestOptions)
+    .then(async response => {
+        const data = await response.json();
+        
+        verifyToken('Voluntariar', data.message, response.status);
+
+        if (response.status == 400) {
+            return createTopModal('Voluntariar', data.message, 'text-bg-danger');
+        }
+
+        const card = document.createElement('div');
+        card.className = 'card m-2 card-pass-r border';
+        card.style.width = '23rem';
+        card.innerHTML = `
+            <img src="${data.space.image[0]}" class="img-fluid w-100" style="height: 300px;" alt="${data.space.name}">
+            <div class="btn card-body" onclick="window.location.href = '../reserve-menu/index.html?id=${data.space.id}';">
+                <h5 class="card-title text-truncate me-2 d-flex justify-content-start">${data.space.name}</h5>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <span class="card-text" style="font-size: small">${data.space.address}  <i class="bi bi-signpost-split"></i></span>
+                    </div>
+                    <div class="border rounded p-1" style="font-size: small">
+                        <span class="card-text fw-bold bi bi-people-fill"> ${data.space.capacity}</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mt-3" style="font-size: small">
+                    <span class="card-text">${data.space.city + ", " + data.space.state}<i class="bi bi-geo-alt"></i></span>
+                    <span class="card-text">${data.space.type} <i class="bi-house-heart-fill"></i></span>
+                </div>
+            </div>`;
+        deckCards.appendChild(card);
+
+        prize.value = data.space.prize;
+
+    });
+
+}getSpace();
+
+flatpickr('#start-date', {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    minDate: "today"
+});
+
+var eventStartDate = document.getElementById('start-date');
+var qttHoursInput = document.getElementById('qtt-hours');
+
+qttHoursInput.disabled = true;
+eventStartDate.addEventListener('change', () => {
+    qttHoursInput.disabled = false;
+    
+    var startDateInput = document.getElementById('start-date').value;
+    let startDate = new Date(startDateInput);
+    
+    let timeToAdd = timestampConverter(qttHoursInput.value);
+
+    let finalDate = new Date(startDate.getTime() + timeToAdd);
+
+    document.getElementById('reserve-total-value').value = prize.value * qttHoursInput.value;
+    document.getElementById('start-date').value = startDate;
+    document.getElementById('final-date').value = finalDate;
+});
+
+qttHoursInput.addEventListener('change', () => { 
+    var startDateInput = document.getElementById('start-date').value;
+
+    let timeToAdd = timestampConverter(qttHoursInput.value);
+
+    let startDate = new Date(startDateInput);
+    let finalDate = new Date(startDate.getTime() + timeToAdd);
+
+    document.getElementById('reserve-total-value').value = prize.value * qttHoursInput.value;
+    document.getElementById('start-date').value = startDate;
+    document.getElementById('final-date').value = finalDate;
+});
+
+
+var submitBtn = document.getElementById('submit-button');
+var form = document.getElementById('add-reserve');
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const dateStart = document.getElementById('start-date').value;
+    const dateFinal = document.getElementById('final-date').value;
+    const hourQtt = document.getElementById('qtt-hours').value;
+
+    if (dateStart.trim() == '' || dateStart == undefined || dateStart == null) {
+        return createTopModal('Voluntariar', 'A data inicial precisa ser preenchida!', 'text-bg-danger');
+    } else if (dateFinal.trim() == '' || dateFinal == undefined || dateFinal == null) {
+        return createTopModal('Voluntariar', 'A data final precisa ser preenchida!', 'text-bg-danger');
+    } else if (!hourQtt) {
+        createTopModal('Voluntariar', 'A quantidade de horas precisa ser entre 1h á 8h!', 'text-bg-danger');
+    }
+
+    email ?? '';
+
+    submitBtn.disabled = true;
+    loadingAdd(submitBtn);
+
+    const body = {
+        start_reservation: convertToAmericanFormat(dateStart),
+        final_reservation: convertToAmericanFormat(dateFinal),
+        qtd_hours: hourQtt,
+        space_id: spaceId,
+        email: email
+    }
+
+    let requestMethod = '';
+    let endpoint = '';
+
+    if (reserveId) {//edit
+        body.reserve_id = reserveId;
+        requestMethod = 'POST';
+        endpoint = 'editReserve';
+    } else {//create
+        requestMethod = 'PUT';
+        endpoint = 'addReserve';
+    }
+
+    const requestOptions = {
+        method: requestMethod,
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    fetch(api + `/src/backend/controllers/user/${endpoint}`, requestOptions)
+    .then(async response => {
+        const data = await response.json();
+
+        verifyToken('Voluntariar', data.message, response.status);
+
+        if (response.status >= 400) {
+            return createTopModal('Voluntariar', data.message, 'text-bg-danger');
+        }
+
+        createTopModal('Voluntariar', data.message, 'text-bg-success');
+        setTimeout(() => {
+            window.location.href = '../reserves/index.html';
+        }, 2000);
+    }).finally(() => {
+        submitBtn.disabled = false;
+        loadingRemove(submitBtn);
+    });
+});
+
+</script>

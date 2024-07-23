@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="body-login">
+    <div class="box-login">
+        <div class="box-internal-login">
+            <h1 class="text-center">Olá,<br>Bem-vindo ao</h1>
+            <img src="../../../imgs/space.png" alt="Bem vindo ao Space." class="img-fluid mx-auto d-block">
+            <p class="mt-3 text-center">Entre com seu CPF e senha.</p>
+        </div>
+        <form action="login" method="post" id="form-login" style="width: 70%; margin-left: 15%">
+            <div class="mb-3">
+              <label for="cpf" class="form-label text-white">CPF</label>
+              <input type="number" class="form-control text-black" id="cpf" maxlength="11" required>
+              <small id="cpfAlertSmallElement"></small>
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label text-white">Senha</label>
+              <input type="password" class="form-control text-black" id="password" required>
+            </div>
+            <div class="mb-3">
+                <button type="submit" class="btn text-white mt-3" id="submit-button" style="width: 100%"> Enviar</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { validateCharCpf, validateLenCpf } from '../../../util/validateCpf.js';
+
+var cpfAlertSmallElement = document.getElementById('cpfAlertSmallElement');
+var cpfElement = document.getElementById('cpf');
+var buttonSubmit = document.getElementById('submit-button');
+
+var form = document.getElementById('form-login');
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const cpf = document.getElementById('cpf').value;
+    const password = document.getElementById('password').value;
+    
+    if (validateLenCpf(cpf, cpfElement)) {
+        return;
+    }
+    
+    const body = {
+        "login": cpf,
+        "password": password
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    buttonSubmit.disabled = true;
+    loadingAdd(buttonSubmit);
+    
+    fetch(api + '/src/backend/controllers/administrator/login', requestOptions)
+    .then(async response => {
+        const feedback = await response.json();
+        if (response.status == 200) {
+            setTimeout(() => {
+                window.location.href = '../space-list/index.html';
+            }, 1000);
+            localStorage.setItem('tokenAdminFiap', feedback.authorization.token);
+        } else {
+            createTopModal('Falha no login', feedback.message, 'text-bg-danger');
+        }
+    })
+    .finally(() => {
+        setTimeout(() => {
+            buttonSubmit.disabled = false;
+            loadingRemove(buttonSubmit);
+        },1000)
+    })
+});
+
+validateCharCpf('cpf');
+</script>

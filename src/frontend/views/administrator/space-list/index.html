@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Import navbar and aside -->
+    <div id="dashboard" style="margin-top: 100px;"></div>
+    <script>document.addEventListener("DOMContentLoaded", () => {
+        fetch("../dashboard/index.html")
+        .then(response => response.text())
+        .then(data => {
+            const dashboard = data.replace('%SPACE%', 'HandsHub > Listar');
+            document.getElementById("dashboard").innerHTML = dashboard;
+        });
+    });
+    </script>
+    <header>
+        <div class="ms-1 me-1">
+            <div class="container d-flex" id="filters-space-list">
+                <div class="input-group m-1">
+                    <input type="text" class="form-control" id="search-input" placeholder="Busque Pelo Nome">
+                    <i class="input-group-text bi bi-search"></i> 
+                </div>
+                <select class="form-select m-1" aria-label="Default" id="select-status">
+                    <option value="all" selected>Situação</option>
+                    <option value="1">Ativo</option>
+                    <option value="0">Desativado</option>
+                </select>
+                <select class="form-select m-1" aria-label="Default" id="select-type">
+                    <option value="all" selected>Atuação</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Direitos Humanos">Direitos Humanos</option>
+                    <option value="Proteção aos Animais">Proteção aos Animais</option>
+                    <option value="Redução da Pobreza">Redução da Pobreza</option>
+                    <option value="Assistência em desastres naturais">Assistência em desastres naturais</option>
+                    <option value="Igualdade de Gênero">Igualdade de Gênero</option>
+                    <option value="Assistência Médica">Assistência Médica</option>
+                </select>
+                <div class="ms-auto d-flex align-self-end">
+                    <button type="button" id="clean-button" class="btn m-1 text-white d-flex"><i class="bi bi-trash mt-1 me-2 text-white" style="line-height: 0;"></i>Limpar</button>
+                    <button type="button" id="submit-button" class="btn m-1 text-white d-flex"><i class="bi bi-search mt-1 me-2 text-white" style="line-height: 0;"></i>Buscar</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr class="my-4 mt-5">
+    <h1 class="ms-4">ONGs</h1>
+    <p class="ms-4 mb-1">Gerencie todas as ONGs cadastradas na plataforma ou adicione novas.</p>
+    <div class="d-flex justify-content-end me-2">
+        <button type="button" class="btn mb-4 me-3 d-flex text-white" style="background-color: #357FDA;" id="new-space">
+            <i class="bi bi-plus-square mt-1 me-2 text-white" id="icon-plus-btn" style="line-height: 0;"></i>Nova ONG</button>
+    </div>
+    <main class="align-self-center overflow-x-auto mt-5" style="width: 95%; margin-left: 2.5%;">
+        <table class="table table-hover text-center" id="table-space">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Atuação</th>
+                <th scope="col">Cidade</th>
+                <th scope="col">Vagas para Voluntários</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-space">
+
+            </tbody>
+        </table>
+        <div id="loading" class="d-flex justify-content-center"></div>
+    </main>
+    <footer class="mt-5 blockquote-footer bottom">
+        <span class="d-flex justify-content-center fw-bold">Grupo Q - FIAP</span>
+        <span class="d-flex justify-content-center">2024 -  ©Todos os direitos reservados. :D</span>
+    </footer>
+    </header>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { verifyToken } from '../../../util/verifyToken.js';
+
+const token = localStorage.getItem('tokenAdminFiap');
+var loading = document.getElementById('loading');
+var table = document.getElementById('table-space');
+var tableBody = document.getElementById('tbody-space');
+
+function list() {
+    var name = document.getElementById('search-input').value;
+    var type = document.getElementById('select-type').value;
+    var status = document.getElementById('select-status').value;
+
+    const body = {
+        name: name,
+        status: status,
+        type: type
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+    loadingAdd(loading);
+    fetch(api + '/src/backend/controllers/administrator/getSpaces', requestOptions)
+    .then(async response => {
+        
+        const data = await response.json();
+
+        verifyToken('Listar Espaços', data.message, response.status);
+
+        if (response.status == 400) {
+            loadingRemove(loading);
+            return createTopModal('Listar Espaços', data.message, 'text-bg-danger');
+        }
+        
+        tableBody.innerHTML = '';
+        data.spaces.forEach(item => {
+            const newRow = tableBody.insertRow();
+
+            item.status = uiControlStatus[item.status];
+            const fields = ['name', 'type', 'city', 'capacity', 'status'];
+            fields.forEach(keys => {
+                const newCell = newRow.insertCell();
+                newCell.textContent = item[keys];
+            });
+            
+            const actions = newRow.insertCell();
+            var btnEdit = document.createElement('button');
+            btnEdit.className = 'border-0 rounded-3 btn-edit';
+            btnEdit.setAttribute('id', `${item.id}`);
+            btnEdit.innerHTML = '<i class="bi bi-pencil-square mt-1" style="line-height: 0;"></i>';
+            actions.appendChild(btnEdit);
+
+            var btnAction = document.createElement('button');
+            btnAction.className = 'border-0 rounded-3 btn-status';
+            btnAction.setAttribute('id', `${item.id}`);
+            btnAction.setAttribute('status', `${item.status}`);
+            item.status == 'Ativo' ? 
+            btnAction.innerHTML = `<i class="bi bi-check2-circle text-success mt-1" id=icon-btn-${item.id} style="line-height: 0;"></i>` : 
+            btnAction.innerHTML = `<i class="bi bi-dash-circle text-danger mt-1" id=icon-btn-${item.id} style="line-height: 0;"></i>`;
+            actions.appendChild(btnAction);
+
+        })  
+        loadingRemove(loading);
+
+        var arrayStatusBtns = document.getElementsByClassName('btn-status');
+        Array.from(arrayStatusBtns).forEach(editStatus);
+        
+        var arrayEditBtns = document.getElementsByClassName('btn-edit');
+        Array.from(arrayEditBtns).forEach(redirectToEditSpace);
+    })
+}list();
+
+const uiControlStatus = {
+    0: "Desativado",
+    1: "Ativo"
+}
+
+var searchBtn = document.getElementById('submit-button');
+searchBtn.addEventListener('click', () => {
+  list();
+});
+
+function editStatus(statusBtn) {
+    statusBtn.addEventListener('click', () => {
+        let statusSpace = statusBtn.getAttribute('status');
+        const spaceId = statusBtn.getAttribute('id');
+
+        let status = '';
+        statusSpace == 'Ativo' ?  status = 0 :  status = 1;
+
+        const body = {
+            id: spaceId,
+            status: status
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+            'authorization': token,
+            'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            body: JSON.stringify(body)
+        }
+
+        fetch(api + '/src/backend/controllers/administrator/updateStatus', requestOptions)
+        .then(async response => {
+            statusBtn.disabled = true;
+            const data = await response.json();
+            verifyToken('Atualizar Status', data.message, response.status);
+            
+            let iconBtn = document.getElementById(`icon-btn-${spaceId}`);
+            if (statusSpace == 'Ativo') {
+                let situation = statusBtn.parentElement.previousElementSibling;
+                iconBtn.classList.remove('bi-check2-circle' ,'text-success');
+                iconBtn.classList.add('bi-dash-circle', 'text-danger');
+                situation.textContent = 'Desativado';
+                statusBtn.setAttribute('status', 'Desativado');
+            } else if (statusSpace == 'Desativado') {
+                let situation = statusBtn.parentElement.previousElementSibling;
+                iconBtn.classList.remove('bi-dash-circle', 'text-danger');
+                iconBtn.classList.add('bi-check2-circle', 'text-success');
+                situation.textContent = 'Ativo';
+                statusBtn.setAttribute('status', 'Ativo');
+            }
+            setTimeout(() => {
+                statusBtn.disabled = false;
+            }, 1000);
+        });
+    });
+}
+
+function redirectToEditSpace(spaceBtn) {
+    spaceBtn.addEventListener('click', () => {
+        window.location.href = `../space-edit/index.html?id=${spaceBtn.id}`;
+    });
+}
+
+var newSpaceBtn = document.getElementById('new-space');
+newSpaceBtn.addEventListener('click', () => {
+    window.location.href = `../space-register/index.html`;
+});
+
+var cleanBtn = document.getElementById('clean-button');
+cleanBtn.addEventListener('click', () => {
+    cleanInputsArray(['search-input', 'select-status', 'select-type']);
+})
+
+</script>

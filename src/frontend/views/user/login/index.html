@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="body-user">
+    <div class="img-inicio-user">
+        <div class="box-background-content">
+            <img src="../../../imgs/space.png" class="logo-user img-fluid d-block" alt="Logo branca da HandsHub">
+            <div class="logo-txt mb-4">Conectando <b>mãos</b> que acolhem</div>
+        </div>
+    </div>
+    <div class="box-input">
+        <div class="box-text">
+            <span class="mt-2"><b>Bem vindo(a)</b></span><br>
+        </div>
+        <div id="current-form">
+            <span class="text-align-center" style="font-size: 16px">Para entrar acesse sua conta</span>
+            <form action="login-user" method="post" id="form-login" class="box-form">
+                <input class="form-control" id="input-login" type="number" placeholder="CPF" maxlength="11" required>
+                <small id="cpfAlertSmallElement"></small>
+                <input class="form-control mt-3" type="password" id="input-password" placeholder="Senha" required>
+                <button type="submit" id="submit-button" class="btn mt-3 w-100"><b>Entrar</b></button>
+            </form>
+        </div>
+        <div class="mt-5 text-start">
+            <span>Não possui uma conta?</span>
+            <a href="../register/index.html">Cadastre-se!</a><br>
+            <a href="../password-reset/index.html">Esqueceu sua senha?</a>
+        </div>
+    </div>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { validateCharCpf, validateLenCpf } from '../../../util/validateCpf.js';
+
+var loginElement = document.getElementById('input-login');
+var form = document.getElementById('form-login');
+form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const login = document.getElementById('input-login').value;
+    const password = document.getElementById('input-password').value;
+    var buttonSubmit = document.getElementById('submit-button');
+    var cpfAlertSmallElement = document.getElementById('cpfAlertSmallElement');
+
+    if (validateLenCpf(login, loginElement)) {
+        return;
+    }
+    
+    const body = {
+        "login": login,
+        "password": password
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    buttonSubmit.disabled = true;
+    loadingAdd(buttonSubmit);
+    
+    fetch(api + '/src/backend/controllers/user/login', requestOptions)
+    .then(async response => {
+        const feedback = await response.json();
+        if (response.status == 200) {
+            setTimeout(() => {
+                window.location.href = '../space-list/index.html';
+            }, 1000);
+            localStorage.setItem('tokenUserFiap', feedback.authorization.token);
+            localStorage.setItem('email', feedback.email);
+        } else {
+            createTopModal('Falha no login', feedback.message, 'text-bg-danger');
+        }
+    })
+    .finally(() => {
+        setTimeout(() => {
+            buttonSubmit.disabled = false;
+            loadingRemove(buttonSubmit);
+        },1000)
+    })
+});
+
+validateCharCpf('input-login'); 
+</script>

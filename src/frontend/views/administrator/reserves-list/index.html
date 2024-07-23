@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Import navbar and aside -->
+    <div id="dashboard" style="margin-top: 100px;"></div>
+    <script>document.addEventListener("DOMContentLoaded", () => {
+        fetch("../dashboard/index.html")
+        .then(response => response.text())
+        .then(data => {
+            const dashboard = data.replace('%SPACE%', 'HandsHub > Voluntários');
+            document.getElementById("dashboard").innerHTML = dashboard;
+        });
+    });
+    </script>
+    <header>
+        <div class="ms-1 me-1">
+            <div class="container d-flex" id="filters-space-list">
+                <select class="form-select m-1" aria-label="Default" id="select-status">
+                    <option value="1" selected>Voluntáriados Ativos</option>
+                    <option value="0">Voluntariados Desativados</option>
+                </select>
+                <div class="ms-auto d-flex align-self-end">
+                    <button type="button" id="clean-button" class="btn m-1 text-white d-flex"><i class="bi bi-trash mt-1 me-2 text-white" style="line-height: 0;"></i>Limpar</button>
+                    <button type="button" id="submit-button" class="btn m-1 text-white d-flex"><i class="bi bi-search mt-1 me-2 text-white" style="line-height: 0;"></i>Buscar</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <hr class="my-4 mt-5">
+    <h1 class="ms-4">Voluntariados</h1>
+    <p class="ms-4 mb-1">Acompanhe todas os voluntariados realizados na plataforma.</p>
+    <div class="d-flex justify-content-end me-2">
+        <button type="button" class="btn mb-4 me-3 d-flex text-white" style="background-color: #357FDA;" id="export-reserves">
+            <i class="bi bi-filetype-csv mt-1 me-2 text-white" id="icon-export-btn" style="line-height: 0;"></i>Exportar</button>
+    </div>
+    <main class="align-self-center overflow-x-auto mt-5" style="width: 95%; margin-left: 2.5%;">
+        <table class="table table-hover text-center" id="table-space">
+            <thead>
+              <tr>
+                <th scope="col">ONG</th>
+                <th scope="col">Atuação</th>
+                <th scope="col">Data Início</th>
+                <th scope="col">Data Final</th>
+                <th scope="col">Qtd. Horas</th>
+                <th scope="col">Contato</th>
+                <th scope="col">Valor pago ao voluntário</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-space">
+
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            <h2 class="mt-5" id="sum-prizes"></h2>
+        </div>
+        <div id="loading" class="d-flex justify-content-center"></div>
+    </main>
+    <footer class="mt-5 blockquote-footer bottom">
+        <span class="d-flex justify-content-center fw-bold">Grupo Q - FIAP</span>
+        <span class="d-flex justify-content-center">2024 -  ©Todos os direitos reservados. :D</span>
+    </footer>
+    </header>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { verifyToken } from '../../../util/verifyToken.js';
+import { brazilianDate } from '../../../util/dateFormater.js';
+
+const token = localStorage.getItem('tokenAdminFiap');
+var loading = document.getElementById('loading');
+var table = document.getElementById('table-space');
+var tableBody = document.getElementById('tbody-space');
+var sumPrizes = document.getElementById('sum-prizes');
+
+function list(csvExport) {
+    var status = document.getElementById('select-status').value;
+    tableBody.innerHTML = '';
+
+    let body = {
+        status: status,
+    }
+
+    csvExport === 'csv' ? body.export = 'csv' : '';
+    
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+    loadingAdd(loading);
+    fetch(api + '/src/backend/controllers/administrator/getReserves', requestOptions)
+    .then(async response => {
+        
+        const data = await response.json();
+
+        verifyToken('Listar Reservas', data.message, response.status);
+
+        if (response.status == 400) {
+            loadingRemove(loading);
+            return createTopModal('Listar Reservas', data.message, 'text-bg-danger');
+        } else if (response.status == 201) {
+            loadingRemove(loading);
+            list();
+            return createTopModal('Exportar Reservas', data.message, 'text-bg-success');
+        }
+        
+        let totalPrizes = 0;
+        data.reserves.forEach(item => {
+            const newRow = tableBody.insertRow();
+
+            item.name = item.spaces.name;
+            item.type = item.spaces.type;
+            totalPrizes = totalPrizes + item.total_prize;
+            item.total_prize = item.total_prize.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL'});
+            item.status = uiControlStatus[item.status];
+            item.start_reservation = brazilianDate(item.start_reservation);
+            item.final_reservation = brazilianDate(item.final_reservation);
+
+            const fields = ['name', 'type', 'start_reservation', 'final_reservation', 'reserved_hours', 'responsible_contact', 'total_prize','status'];
+            fields.forEach(keys => {
+                const newCell = newRow.insertCell();
+                newCell.textContent = item[keys];
+            });
+            
+            const actions = newRow.insertCell();
+            var btnAction = document.createElement('span');
+            btnAction.className = 'border-0 rounded-3 btn-status';
+            btnAction.setAttribute('id', `${item.id}`);
+            btnAction.setAttribute('status', `${item.status}`);
+            item.status == 'Ativo' ? 
+            btnAction.innerHTML = `<i class="bi bi-check2-circle text-success mt-1" id=icon-btn-${item.id} style="line-height: 0;"></i>` : 
+            btnAction.innerHTML = `<i class="bi bi-dash-circle text-danger mt-1" id=icon-btn-${item.id} style="line-height: 0;"></i>`;
+            actions.appendChild(btnAction);
+
+        });
+        loadingRemove(loading);
+        sumPrizes.textContent = 'Total: ' + totalPrizes.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL'});
+
+    });
+}list();
+
+const uiControlStatus = {
+    0: "Desativado",
+    1: "Ativo"
+}
+
+var searchBtn = document.getElementById('submit-button');
+searchBtn.addEventListener('click', () => {
+  list();
+});
+
+var cleanBtn = document.getElementById('clean-button');
+cleanBtn.addEventListener('click', () => {
+    cleanInputsArray(['select-status']);
+    list(); 
+});
+
+var exportBtn = document.getElementById('export-reserves');
+exportBtn.addEventListener('click', () => {
+    list('csv');
+})
+
+</script>

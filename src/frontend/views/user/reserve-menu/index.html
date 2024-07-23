@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da ONG - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="body-reserve-space-list">
+    <nav class="navbar navbar-expand-lg bg-black">
+        <div class="container-fluid">
+            <img id="img-space" src="../../../imgs/space.png" onclick="window.location.href = '../space-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <div class="d-flex justify-content-end" style="font-size: x-large;">
+                <ul class="navbar-nav me-auto">
+                    <li class="d-block d-inline-flex m-3">
+                        <a id="user-reserves" onclick="window.location.href = '../reserves/index.html';">
+                            <i class="bi bi-luggage text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white mt-1" style="font-size: small;">Minhas ONGs</span>
+                        </a>
+                        <a id="user-logout" class="ms-3" onclick="localStorage.removeItem('tokenUserFiap'); window.location.href = '../login/index.html';" style="text-decoration: none;">
+                            <i class="bi bi-box-arrow-right text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white d-flex justify-content-center me-2 mt-1" style="font-size: small;">Sair</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="d-block justify-content-center w-100" id="space-reserve">
+        <!-- Here array -->
+    </div>
+    <footer class="mt-5 blockquote-footer bottom">
+        <span class="d-flex justify-content-center fw-bold">Grupo Q - FIAP</span>
+        <span class="d-flex justify-content-center">2024 -  ©Todos os direitos reservados. :D</span>
+    </footer>
+</body>
+</html>
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { verifyToken } from '../../../util/verifyToken.js';
+import { brazilianDate } from '../../../util/dateFormater.js';
+
+const token = localStorage.getItem('tokenUserFiap');
+
+const queryString = new URLSearchParams(window.location.search);
+const getValueQueryString = (param) => queryString.get(param);
+const spaceId = getValueQueryString('id');
+
+var spaceDiv = document.getElementById('space-reserve');
+function getSpace() {
+    if (!spaceId || spaceId == 0) {
+        setTimeout(() => {
+            window.location.href = '../space-list/index.html';
+        }, 2000);
+        return createTopModal('Reservar Espaço', 'Espaço inexistente!', 'text-bg-danger');
+    }
+    const body = {
+        id: spaceId
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+
+    fetch(api + '/src/backend/controllers/user/getSpace', requestOptions)
+    .then(async response => {
+        const data = await response.json();
+        
+        verifyToken('Listar Espaço', data.message, response.status);
+
+        if (response.status == 400) {
+            return createTopModal('Listar Espaço', data.message, 'text-bg-danger');
+        }
+
+        spaceDiv.innerHTML = `
+            <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active carousel-fade reserve-menu-background" data-bs-interval="5000" id="image-0">
+                        <img src="${data.space.image[0]}" class="d-block w-100 images-details" alt="${data.space.name}">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <div class="fs-4 d-block m-3">
+                <div class="d-flex justify-content-between">
+                    <h1>${data.space.name}</h1>
+                    <span>$ ${data.space.prize}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span><i class="fw-bold bi-house-heart-fill"></i> Tipo: ${data.space.type}</span>
+                    <button id="reserve-${data.space.id}" onclick="window.location.href = '../booking-schedule/index.html?id=${data.space.id}'";
+                        class="btn btn-outline-dark btns-list-user"><i class="bi bi-bookmark-plus"></i> Voluntariar</button>
+                </div>
+                <hr class="my-4">
+                <div class="mt-5">
+                    <span class="d-block fw-bold mb-3" style="font-size: medium;">Detalhes:</span>
+                    <div class="space-details">
+                        <span class="d-block"><i class="fw-bold bi bi-people-fill"></i> Vagas para voluntários: ${data.space.capacity}</span>
+                        <span class="d-block"><i class="fw-bold bi bi-geo-alt"></i> CEP: ${data.space.zip_code}</span>
+                        <span class="d-block"><i class="fw-bold bi bi-signpost-split"></i> Endereço: ${data.space.address}</span>
+                        <span class="d-block"><i class="fw-bold bi bi-geo-alt"></i> ${data.space.city + ", " + data.space.state }</span>
+                    </div>
+                    <hr class="my-4">
+                    <span class="d-block fw-bold mb-3" style="font-size: medium;">Descrição:</span>
+                    <span class="d-block"><i class="bi bi-card-text m-2"></i>${data.space.description}</span>
+                </div>
+            </div>
+        `;
+
+        for (let index in data.space.image) {
+            if (index > 0) {
+                let divImage = document.getElementById(`image-0`);
+                divImage.insertAdjacentHTML('afterend', `
+                    <div class="carousel-item carousel-fade reserve-menu-background" data-bs-interval="3000" id="image-${index}">
+                        <img src="${data.space.image[index]}" class="d-block w-100 images-details" alt="${data.space.name}">
+                    </div>
+                `);
+            }
+        }
+    });
+}getSpace();
+    
+</script>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de ONGs - HandsHub</title>
+    <link rel="stylesheet" href="../../../css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../../../css/style.css">
+    <script src="../../../js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="body-space-list">
+    <nav class="navbar navbar-expand-lg bg-black">
+        <div class="container-fluid">
+            <img id="img-space" src="../../../imgs/space.png" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <div class="d-flex justify-content-end" style="font-size: x-large;">
+                <ul class="navbar-nav me-auto">
+                    <li class="d-block d-inline-flex m-3">
+                        <a id="user-reserves" onclick="window.location.href = '../reserves/index.html';">
+                            <i class="bi bi-luggage text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white mt-1" style="font-size: small;">Minhas ONGs</span>
+                        </a>
+                        <a id="user-logout" class="ms-3" onclick="localStorage.removeItem('tokenUserFiap'); window.location.href = '../login/index.html';" style="text-decoration: none;">
+                            <i class="bi bi-box-arrow-right text-white d-flex justify-content-center pointer"></i>
+                            <span class="d-flex text-white d-flex justify-content-center me-2 mt-1" style="font-size: small;">Sair</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header>
+        <div class="ms-1 me-1 mt-4">
+            <div class="container d-flex" id="filters-space-list">
+                <div class="input-group m-1">
+                    <input type="text" class="form-control" id="search-input" placeholder="Busque pelo nome">
+                    <i class="input-group-text bi bi-search"></i> 
+                </div>
+                <div class="input-group m-1">
+                    <input type="number" class="form-control" id="capacity-input" placeholder="Vagas para voluntários">
+                    <i class="input-group-text bi bi-people-fill"></i> 
+                </div>
+                <select class="form-select m-1" aria-label="Default" id="select-type">
+                    <option value="all" selected>Atuação</option>
+                    <option value="Meio Ambiente">Meio Ambiente</option>
+                    <option value="Direitos Humanos">Direitos Humanos</option>
+                    <option value="Proteção aos Animais">Proteção aos Animais</option>
+                    <option value="Redução da Pobreza">Redução da Pobreza</option>
+                    <option value="Assistência em desastres naturais">Assistência em desastres naturais</option>
+                    <option value="Igualdade de Gênero">Igualdade de Gênero</option>
+                    <option value="Assistência Médica">Assistência Médica</option>
+                </select>
+                <div class="ms-auto d-flex align-self-end">
+                    <button type="button" id="clean-button" class="btn m-1 text-white d-flex"><i class="bi bi-trash mt-1 me-2 text-white" style="line-height: 0;"></i>Limpar</button>
+                    <button type="button" id="submit-button" class="btn m-1 text-white d-flex"><i class="bi bi-search mt-1 me-2 text-white" style="line-height: 0;"></i>Buscar</button>
+                </div>
+            </div>
+        </div>
+    </header>
+<hr class="my-4 mt-5">
+<h1 class="ms-4">ONGs</h1>
+<p class="ms-4 mb-1">Seja um voluntário, busque ONGs com causas que se identifique.</p>
+<div id="list-spaces-user" class="mt-5 ms-3 me-3 d-flex flex-wrap justify-content-center">
+    <!-- Here is the array with all the spaces -->
+</div>
+<div id="loading" class="d-flex justify-content-center"></div>
+<div class="d-flex justify-content-center mt-5">
+    <button id="loading-more" class="btn btn-outline-secondary w-25"><i class="bi bi-plus-lg"> Carregar Mais</i></button>
+</div>
+<footer class="mt-5 blockquote-footer bottom">
+    <span class="d-flex justify-content-center fw-bold">Grupo Q - FIAP</span>
+    <span class="d-flex justify-content-center">2024 -  ©Todos os direitos reservados. :D</span>
+</footer>
+</body>  
+</html>
+
+<script type="module">
+import api from '../../../util/apiAddress.js';
+import { loadingAdd, loadingRemove } from '../../../util/loading.js';
+import { createTopModal } from '../../../components/modal.js';
+import { cleanInputsArray } from '../../../util/treatmentInputs.js';
+import { verifyToken } from '../../../util/verifyToken.js';
+import { brazilianDate } from '../../../util/dateFormater.js';
+
+const token = localStorage.getItem('tokenUserFiap');
+
+var deckCards = document.getElementById('list-spaces-user');
+var loading = document.getElementById('loading');
+var loadingMoreBtn = document.getElementById('loading-more');
+
+function list() {
+    deckCards.innerHTML = '';
+    var name = document.getElementById('search-input').value;
+    var type = document.getElementById('select-type').value;
+    var capacity = document.getElementById('capacity-input').value;
+
+    const body = {
+        name: name,
+        capacity: capacity,
+        type: type
+    }
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+        'authorization': token,
+        'Content-Type': 'application/json'
+        },
+        mode: 'cors',
+        body: JSON.stringify(body)
+    }
+    
+    loadingAdd(loading);
+    fetch(api + '/src/backend/controllers/user/getSpaces', requestOptions)
+    .then(async response => {
+        const data = await response.json();
+        
+        verifyToken('Listar Espaços', data.message, response.status);
+
+        if (response.status == 400) {
+            return createTopModal('Listar Espaços', data.message, 'text-bg-danger');
+        }
+
+        //View control structure
+        let numberToShow = 8;
+        let showHome = {
+            click: 1, //Debug
+            qtdShow: numberToShow
+        }
+
+        //Slice the array to create the load more logic.
+        let arraySpaces = data.spaces.slice(0, showHome.qtdShow);
+        data.spaces.length < showHome.qtdShow ? loadingMoreBtn.disabled = true : loadingMoreBtn.disabled = false;
+        loadingMoreBtn.addEventListener('click', () => {
+            //console.log(showHome.click++);
+            showHome.qtdShow = showHome.qtdShow + numberToShow;
+
+            if (showHome.qtdShow < data.spaces.length) {
+                arraySpaces = data.spaces.slice((showHome.qtdShow - numberToShow), showHome.qtdShow);
+                loadingMoreBtn.disabled = false;
+            } else {
+                arraySpaces = data.spaces.slice((showHome.qtdShow - numberToShow) , showHome.qtdShow + 1);
+                loadingMoreBtn.disabled = true;
+            }
+            render();
+        });
+         
+        function render() {
+            arraySpaces.forEach(space => {
+                const card = document.createElement('div');
+                card.className = 'card m-2 card-pass border';
+                card.style.width = '23rem';
+                card.innerHTML = `
+                    <img src="${space.image[0]}" class="img-fluid w-100" style="height: 300px;" alt="${space.name}">
+                    <div class="btn card-body" onclick="window.location.href = '../reserve-menu/index.html?id=${space.id}';">
+                        <h5 class="card-title text-truncate me-2 d-flex justify-content-start">${space.name}</h5>
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <span class="card-text" style="font-size: small">${space.address}  <i class="bi bi-signpost-split"></i></span>
+                            </div>
+                            <div class="border rounded p-1" style="font-size: small">
+                                <span class="card-text fw-bold bi bi-people-fill"> ${space.capacity}</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-3" style="font-size: small">
+                            <span class="card-text">${space.city + ", " + space.state}<i class="bi bi-geo-alt"></i></span>
+                            <span class="card-text">${space.type} <i class="bi-house-heart-fill"></i></span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4 fs-6">
+                            <button id="reserve-${space.id}" 
+                                class="btn btn-outline-dark btns-list-user"><i class="bi bi-bookmark-plus"></i> Ver Detalhes</button>
+                            <span id="prize-card">$ ${space.prize}</span>
+                        </div>
+                    </div>`;
+                deckCards.appendChild(card);
+            });
+        }render();
+    }).finally(() => {
+        loadingRemove(loading);
+    })
+}list();
+
+var submitBtn = document.getElementById('submit-button');
+submitBtn.addEventListener('click', () => {
+    list();
+});
+
+var cleanBtn = document.getElementById('clean-button');
+cleanBtn.addEventListener('click', () => {
+    cleanInputsArray(['search-input', 'select-type', 'capacity-input']);
+    list();
+});
+
+</script>
