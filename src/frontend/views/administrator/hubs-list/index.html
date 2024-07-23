@@ -16,14 +16,14 @@
         fetch("../dashboard/index.html")
         .then(response => response.text())
         .then(data => {
-            const dashboard = data.replace('%SPACE%', 'HandsHub > Listar');
+            const dashboard = data.replace('%HANDSHUB%', 'HandsHub > Listar');
             document.getElementById("dashboard").innerHTML = dashboard;
         });
     });
     </script>
     <header>
         <div class="ms-1 me-1">
-            <div class="container d-flex" id="filters-space-list">
+            <div class="container d-flex" id="filters-hubs-list">
                 <div class="input-group m-1">
                     <input type="text" class="form-control" id="search-input" placeholder="Busque Pelo Nome">
                     <i class="input-group-text bi bi-search"></i> 
@@ -54,7 +54,7 @@
     <h1 class="ms-4">ONGs</h1>
     <p class="ms-4 mb-1">Gerencie todas as ONGs cadastradas na plataforma ou adicione novas.</p>
     <div class="d-flex justify-content-end me-2">
-        <button type="button" class="btn mb-4 me-3 d-flex text-white" style="background-color: #357FDA;" id="new-space">
+        <button type="button" class="btn mb-4 me-3 d-flex text-white" style="background-color: #357FDA;" id="new-hubs">
             <i class="bi bi-plus-square mt-1 me-2 text-white" id="icon-plus-btn" style="line-height: 0;"></i>Nova ONG</button>
     </div>
     <main class="align-self-center overflow-x-auto mt-5" style="width: 95%; margin-left: 2.5%;">
@@ -63,7 +63,7 @@
               <tr>
                 <th scope="col">Nome</th>
                 <th scope="col">Atuação</th>
-                <th scope="col">Cidade</th>
+                <th scope="col">Localização</th>
                 <th scope="col">Vagas para Voluntários</th>
                 <th scope="col">Situação</th>
                 <th scope="col">Ações</th>
@@ -115,16 +115,16 @@ function list() {
         body: JSON.stringify(body)
     }
     loadingAdd(loading);
-    fetch(api + '/src/backend/controllers/administrator/getSpaces', requestOptions)
+    fetch(api + '/src/backend/controllers/administrator/getOngs', requestOptions)
     .then(async response => {
         
         const data = await response.json();
 
-        verifyToken('Listar Espaços', data.message, response.status);
+        verifyToken('Listar ONGs', data.message, response.status);
 
         if (response.status == 400) {
             loadingRemove(loading);
-            return createTopModal('Listar Espaços', data.message, 'text-bg-danger');
+            return createTopModal('Listar ONGs', data.message, 'text-bg-danger');
         }
         
         tableBody.innerHTML = '';
@@ -225,15 +225,15 @@ function editStatus(statusBtn) {
     });
 }
 
-function redirectToEditSpace(spaceBtn) {
-    spaceBtn.addEventListener('click', () => {
-        window.location.href = `../space-edit/index.html?id=${spaceBtn.id}`;
+function redirectToEditSpace(hubsBtn) {
+    hubsBtn.addEventListener('click', () => {
+        window.location.href = `../hubs-edit/index.html?id=${hubsBtn.id}`;
     });
 }
 
-var newSpaceBtn = document.getElementById('new-space');
-newSpaceBtn.addEventListener('click', () => {
-    window.location.href = `../space-register/index.html`;
+var newHubsBtn = document.getElementById('new-hubs');
+newHubsBtn.addEventListener('click', () => {
+    window.location.href = `../hubs-register/index.html`;
 });
 
 var cleanBtn = document.getElementById('clean-button');

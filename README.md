@@ -31,7 +31,7 @@ npm install webpack
 npm install http-server
 ```
 ```bash
-npm npm install @supabase/supabase-js
+npm install @supabase/supabase-js
 ```
 ```bash
 npm install dotenv

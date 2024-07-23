@@ -37,6 +37,7 @@ const updateSpace = (data) => {
         status: data.status,
         type: data.type,
         prize: data.prize,
+        contact: data.contact,
         description: data.description,
         image: data.image
     }, 'id', data.id);

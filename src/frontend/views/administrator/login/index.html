@@ -13,7 +13,7 @@
     <div class="box-login">
         <div class="box-internal-login">
             <h1 class="text-center">Olá,<br>Bem-vindo ao</h1>
-            <img src="../../../imgs/space.png" alt="Bem vindo ao Space." class="img-fluid mx-auto d-block">
+            <img src="../../../imgs/hubs.png" alt="Bem vindo ao Hubs." class="img-fluid mx-auto d-block">
             <p class="mt-3 text-center">Entre com seu CPF e senha.</p>
         </div>
         <form action="login" method="post" id="form-login" style="width: 70%; margin-left: 15%">
@@ -76,7 +76,7 @@ form.addEventListener('submit', (event) => {
         const feedback = await response.json();
         if (response.status == 200) {
             setTimeout(() => {
-                window.location.href = '../space-list/index.html';
+                window.location.href = '../hubs-list/index.html';
             }, 1000);
             localStorage.setItem('tokenAdminFiap', feedback.authorization.token);
         } else {

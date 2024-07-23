@@ -17,19 +17,19 @@
         fetch("../dashboard/index.html")
         .then(response => response.text())
         .then(data => {
-            const dashboard = data.replace('%SPACE%', 'HandsHub > Cadastro');
+            const dashboard = data.replace('%HANDSHUB%', 'HandsHub > Editar');
             document.getElementById("dashboard").innerHTML = dashboard;
         });
     });
     </script>
     <h1 class="ms-4 mt-5">ONG</h1>
-    <p class="ms-4 me-4 mb-1">Cadastre nova ONG</p>
+    <p class="ms-4 me-4 mb-1">Editar ONG cadastrada</p>
     <div class="d-flex justify-content-end me-5">
         <i class="bi bi-arrow-left previous-page-list" style="font-size: xx-large;"></i>
     </div>
-    <form action="add-new-space" method='PUT' id="add-new-space">
+    <form action="edit-hub" method='POST' id="edit-hub">
         <div class="mt-4 me-2">
-            <div class="container justify-content-center mt-5" id="container-space-register">
+            <div class="container justify-content-center mt-5" id="container-hub-register">
                 <div class="row">
                     <span class="ms-3 fw-bold">Detalhes:</span>
                     <div class="col-md-12">
@@ -47,9 +47,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="input-group m-2">
+                        <div class="input-group m-2"> 
                             <i class="input-group-text bi bi-geo-alt"></i>
-                            <input type="text" id="city" class="form-control" placeholder="Cidade" required>
+                            <input type="text" id="city" class="form-control" placeholder="Localização" required>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -72,7 +72,7 @@
                     <div class="col-md-6">
                         <div class="input-group m-2">
                             <i class="input-group-text bi bi-house-heart-fill"></i>
-                            <select id="type" class="form-control form-select" placeholder="Tipo" required>
+                            <select id="type" class="form-control form-select" placeholder="Atuação" required>
                                 <option value="all" selected>Atuação</option>
                                 <option value="Meio Ambiente">Meio Ambiente</option>
                                 <option value="Direitos Humanos">Direitos Humanos</option>
@@ -87,19 +87,25 @@
                     <div class="col-md-6">
                         <div class="input-group m-2">
                             <i class="input-group-text bi bi-geo-fill"></i> 
-                            <input type="number" oninput="this.value = this.value.slice(0, 8)" id="zip-code" class="form-control" placeholder="CEP" required>
+                            <input type="number" id="zip-code" oninput="this.value = this.value.slice(0, 8)" class="form-control" placeholder="CEP" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="input-group m-2">
                             <i class="input-group-text bi bi-people-fill"></i>
-                            <input type="number" oninput="this.value = this.value.slice(0, 4)" id="capacity" class="form-control" placeholder="Vagas para Voluntarios" required>
+                            <input type="number" id="capacity" oninput="this.value = this.value.slice(0, 4)" class="form-control" placeholder="Vagas para Voluntarios" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="input-group m-2">
                             <i class="input-group-text bi bi-currency-dollar"></i>
-                            <input type="number" id="prize" class="form-control" placeholder="Valor pago ao voluntário" required>
+                            <input type="number" id="prize" class="form-control" placeholder="Bônus para Voluntários" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group m-2">
+                            <i class="input-group-text bi bi-envelope"></i>
+                            <input type="email" id="contact" class="form-control" placeholder="Email de Contato" required>
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -108,7 +114,7 @@
                             <textarea type="text" id="description" class="form-control" placeholder="Descrição"></textarea>
                         </div>
                     </div>
-                    <span class="mt-3 ms-3 fw-bold">Imagens:</span>
+                    <span class="mt-3 ms-3 fw-bold">Logo e imagens da ONG:</span>
                     <div class="col-md-6" id="image-div-1">
                         <div class="input-group m-2">
                             <i class="input-group-text bi bi-image"></i>
@@ -135,16 +141,75 @@ import { cleanInputsArray } from '../../../util/treatmentInputs.js';
 import { verifyToken } from '../../../util/verifyToken.js';
 
 const token = localStorage.getItem('tokenAdminFiap');
+var divImage = document.getElementById(`image-div-1`);
 
-let click = 1;
-let sequencialId = 1;
+const queryString = new URLSearchParams(window.location.search);
+const getValueQueryString = (param) => queryString.get(param);
+const spaceId = getValueQueryString('id');
+
+let click = '';
+let sequencialId = '';
+function getSpace() {
+    if(spaceId > 0) {
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'authorization': token,
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        }
+
+        fetch(api + `/src/backend/controllers/administrator/getOng?id=${spaceId}`, requestOptions)
+        .then(async response => {
+            const data = await response.json();
+            verifyToken('Editar ONG', data.message, response.status);
+            if (response.status != 200) {
+                return createTopModal('Editar ONG', data.message, 'text-bg-danger');
+            }
+            
+            document.getElementById('name').value = data.space.name;
+            document.getElementById('addrees').value = data.space.address;
+            document.getElementById('city').value = data.space.city;
+            document.getElementById('state').value = data.space.state;
+            document.getElementById('status').value = data.space.status;
+            document.getElementById('type').value = data.space.type;
+            document.getElementById('zip-code').value = data.space.zip_code;
+            document.getElementById('capacity').value = data.space.capacity;
+            document.getElementById('prize').value = data.space.prize;
+            document.getElementById('contact').value = data.space.contact;
+            document.getElementById('description').value = data.space.description;
+            document.getElementById('image-input-1').value = data.space.image[0] == undefined ? '':  data.space.image[0];
+
+            let idGetDivs = 0;
+            for (let index in data.space.image) {
+                if (index > 0) {
+                    divImage = document.getElementById(`image-div-${index}`);
+                    idGetDivs = parseInt(index) + 1;
+                    divImage.insertAdjacentHTML('afterend', `
+                        <div class="col-md-6" id="image-div-${idGetDivs}">
+                            <div class="input-group m-2">
+                                <i class="input-group-text bi bi-images"></i>
+                                <input type="link" id="image-input-${idGetDivs}" class="form-control images-input" placeholder="https://suaurl.com" value="${data.space.image[index]}" required></input>
+                                <button class="input-group-text bi bi-dash-lg" id="plus-image-${idGetDivs}"></button>
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+            click = idGetDivs;
+            sequencialId = idGetDivs;
+        });
+    }
+}getSpace();
+
 var addImageBtn = document.getElementById(`plus-image-1`);
 addImageBtn.addEventListener('click', () => {
     var divImage = document.getElementById(`image-div-${click}`);
     divImage == null ? divImage = document.getElementById('image-div-1') : divImage;
     if (click >= 15) {
         click = 15;
-        return createTopModal('Adicionar Espaço', 'O espaço não pode ter mais de 15 imagens', 'text-bg-danger');
+        return createTopModal('Adicionar ONG', 'A ONG não pode ter mais de 15 imagens', 'text-bg-danger');
     } 
     click++;
     sequencialId++
@@ -165,7 +230,7 @@ document.addEventListener('click', (event) => {
         
         if (click < 1) {
             click = 1;
-            return createTopModal('Adicionar Espaço', 'É necessário que o espaço tenha pelo menos uma imagem!', 'text-bg-danger');
+            return createTopModal('Adicionar ONG', 'É necessário que a ONG tenha pelo menos uma imagem!', 'text-bg-danger');
         }
         
         let parts = currentButton.split('-');
@@ -176,25 +241,26 @@ document.addEventListener('click', (event) => {
     }
 });
 
-var form = document.getElementById('add-new-space');
-var previousPage = document.getElementsByClassName('previous-page-list');
-Array.from(previousPage).forEach(elements => {
-    elements.addEventListener('click', () => {
-    form.innerHTML = '';
-    window.location.href = `../space-list/index.html`;
-    });
-});
-
 var imagesInputs = document.getElementsByClassName('images-input');
 
 var cleanBtn = document.getElementById('clean-button');
 cleanBtn.addEventListener('click', () => {
-    cleanInputsArray(['name', 'addrees', 'city', 'state', 'status', 'type', 'zip-code', 'capacity', 'prize', 'description'], imagesInputs);
-})
+    cleanInputsArray(['name', 'addrees', 'city', 'state', 'status', 'type', 'zip-code', 'capacity', 'prize', 'contact', 'description'], imagesInputs);
+});
+
+var form = document.getElementById('edit-hub');
+var previousPage = document.getElementsByClassName('previous-page-list');
+Array.from(previousPage).forEach(elements => {
+    elements.addEventListener('click', () => {
+    form.innerHTML = '';
+    window.location.href = `../hubs-list/index.html`;
+    });
+});
 
 var submitBtn = document.getElementById('submit-button');
 form.addEventListener('submit', (event) => {
     event.preventDefault();
+    loadingAdd(submitBtn);
 
     const name = document.getElementById('name').value;
     const address = document.getElementById('addrees').value;
@@ -205,6 +271,7 @@ form.addEventListener('submit', (event) => {
     const cep = document.getElementById('zip-code').value;
     const capacity = document.getElementById('capacity').value;
     const prize = document.getElementById('prize').value;
+    const contact = document.getElementById('contact').value;
     const description = document.getElementById('description').value;
     
     let images = {}
@@ -215,10 +282,11 @@ form.addEventListener('submit', (event) => {
     });
 
     if (type == 'all') {
-        return createTopModal('Adicionar Espaço', 'Selecione um tipo de espaço!', 'text-bg-danger');
+        return createTopModal('Editar ONG', 'Selecione um tipo de Atuação!', 'text-bg-danger');
     }
     
     const body = {
+        id: spaceId,
         name: name,
         address: address,
         city: city,
@@ -228,12 +296,13 @@ form.addEventListener('submit', (event) => {
         status: status,
         type: type,
         prize: prize,
+        contact: contact,
         description: description,
         image: images
     }
 
     const requestOptions = {
-        method: 'PUT',
+        method: 'POST',
         headers: {
         'authorization': token,
         'Content-Type': 'application/json'
@@ -243,23 +312,21 @@ form.addEventListener('submit', (event) => {
     }
 
     submitBtn.disabled.true;
-    loadingAdd(submitBtn);
-    fetch(api + '/src/backend/controllers/administrator/addSpace', requestOptions)
+    fetch(api + '/src/backend/controllers/administrator/editOng', requestOptions)
     .then(async response => {
         const data = await response.json();
-        verifyToken('Adicionar Espaço', data.message, response.status);
-        if (response.status != 201) {
-            return createTopModal('Adicionar Espaço', data.message, 'text-bg-danger');
+        verifyToken('Editar ONG', data.message, response.status);
+        if (response.status == 400) {
+            return createTopModal('Editar ONG', data.message, 'text-bg-danger');
         }
-
-        cleanInputsArray(['name', 'addrees', 'city', 'state', 'status', 'type', 'zip-code', 'capacity', 'prize', 'description'], imagesInputs);
         
-        return createTopModal('Adicionar Espaço', data.message, 'text-bg-success');
+        return createTopModal('Editar ONG', data.message, 'text-bg-success');
 
-    }).finally(() => {
-        loadingRemove(submitBtn);
     });
+    setTimeout(() => {
+        loadingRemove(submitBtn);
+        submitBtn.disabled.false;
+    }, 1000);
 });
-
 
 </script>

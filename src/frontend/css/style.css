@@ -1,5 +1,5 @@
 .body-login {
-    background-image: url('../imgs/space_background.png');
+    background-image: url('../imgs/hubs_background.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -47,7 +47,7 @@
 }
 .img-inicio-user {
     display: block;
-    background-image: url('../imgs/space_background.png');
+    background-image: url('../imgs/hubs_background.png');
     background-size: cover;
     height: 100%;
     width: 50%;
@@ -131,12 +131,12 @@
     background-color: #357FDA;
     color: white;
 }
-#clean-button:hover, #submit-button:hover, #new-space:hover {
+#clean-button:hover, #submit-button:hover, #new-hubs:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 @media only screen and (max-width: 991px) {
-    #filters-space-list {
+    #filters-hubs-list {
         display: flex;
         flex-wrap: wrap;
         margin-top: 2px;
@@ -153,12 +153,12 @@
     }
 }
 @media (max-width: 750px) {
-    .space-details {
+    .hubs-details {
         display: inline-block;
     }
 }
 @media (min-width: 880px) {
-    .space-details {
+    .hubs-details {
         display: flex;
         justify-content: space-between;
     }
@@ -166,7 +166,7 @@
 #prize-card:hover {
     color: red;
 }
-#img-space:hover {
+#img-hub:hover {
     cursor: pointer;
 }
 .pointer {

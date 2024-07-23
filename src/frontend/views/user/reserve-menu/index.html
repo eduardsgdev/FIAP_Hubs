@@ -12,7 +12,7 @@
 <body class="body-reserve-space-list">
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
-            <img id="img-space" src="../../../imgs/space.png" onclick="window.location.href = '../space-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <img id="img-hub" src="../../../imgs/hubs.png" onclick="window.location.href = '../hubs-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
             <div class="d-flex justify-content-end" style="font-size: x-large;">
                 <ul class="navbar-nav me-auto">
                     <li class="d-block d-inline-flex m-3">
@@ -56,9 +56,9 @@ var spaceDiv = document.getElementById('space-reserve');
 function getSpace() {
     if (!spaceId || spaceId == 0) {
         setTimeout(() => {
-            window.location.href = '../space-list/index.html';
+            window.location.href = '../hubs-list/index.html';
         }, 2000);
-        return createTopModal('Reservar Espaço', 'Espaço inexistente!', 'text-bg-danger');
+        return createTopModal('Reservar ONG', 'ONG inexistente!', 'text-bg-danger');
     }
     const body = {
         id: spaceId
@@ -74,14 +74,14 @@ function getSpace() {
         body: JSON.stringify(body)
     }
 
-    fetch(api + '/src/backend/controllers/user/getSpace', requestOptions)
+    fetch(api + '/src/backend/controllers/user/getOng', requestOptions)
     .then(async response => {
         const data = await response.json();
         
-        verifyToken('Listar Espaço', data.message, response.status);
+        verifyToken('Listar ONG', data.message, response.status);
 
         if (response.status == 400) {
-            return createTopModal('Listar Espaço', data.message, 'text-bg-danger');
+            return createTopModal('Listar ONG', data.message, 'text-bg-danger');
         }
 
         spaceDiv.innerHTML = `
@@ -107,13 +107,13 @@ function getSpace() {
                 </div>
                 <div class="d-flex justify-content-between">
                     <span><i class="fw-bold bi-house-heart-fill"></i> Tipo: ${data.space.type}</span>
-                    <button id="reserve-${data.space.id}" onclick="window.location.href = '../booking-schedule/index.html?id=${data.space.id}'";
+                    <button id="reserve-${data.space.id}" onclick="window.location.href = '../hubs-schedule/index.html?id=${data.space.id}'";
                         class="btn btn-outline-dark btns-list-user"><i class="bi bi-bookmark-plus"></i> Voluntariar</button>
                 </div>
                 <hr class="my-4">
                 <div class="mt-5">
                     <span class="d-block fw-bold mb-3" style="font-size: medium;">Detalhes:</span>
-                    <div class="space-details">
+                    <div class="hubs-details">
                         <span class="d-block"><i class="fw-bold bi bi-people-fill"></i> Vagas para voluntários: ${data.space.capacity}</span>
                         <span class="d-block"><i class="fw-bold bi bi-geo-alt"></i> CEP: ${data.space.zip_code}</span>
                         <span class="d-block"><i class="fw-bold bi bi-signpost-split"></i> Endereço: ${data.space.address}</span>

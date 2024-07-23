@@ -16,14 +16,14 @@
         fetch("../dashboard/index.html")
         .then(response => response.text())
         .then(data => {
-            const dashboard = data.replace('%SPACE%', 'HandsHub > Voluntários');
+            const dashboard = data.replace('%HANDSHUB%', 'HandsHub > Voluntários');
             document.getElementById("dashboard").innerHTML = dashboard;
         });
     });
     </script>
     <header>
         <div class="ms-1 me-1">
-            <div class="container d-flex" id="filters-space-list">
+            <div class="container d-flex" id="filters-hubs-list">
                 <select class="form-select m-1" aria-label="Default" id="select-status">
                     <option value="1" selected>Voluntáriados Ativos</option>
                     <option value="0">Voluntariados Desativados</option>
@@ -52,7 +52,7 @@
                 <th scope="col">Data Final</th>
                 <th scope="col">Qtd. Horas</th>
                 <th scope="col">Contato</th>
-                <th scope="col">Valor pago ao voluntário</th>
+                <th scope="col">Bônus para voluntário</th>
                 <th scope="col">Status</th>
               </tr>
             </thead>
@@ -111,15 +111,15 @@ function list(csvExport) {
         
         const data = await response.json();
 
-        verifyToken('Listar Reservas', data.message, response.status);
+        verifyToken('Listar ONGs Agendadas', data.message, response.status);
 
         if (response.status == 400) {
             loadingRemove(loading);
-            return createTopModal('Listar Reservas', data.message, 'text-bg-danger');
+            return createTopModal('Listar ONGs Agendadas', data.message, 'text-bg-danger');
         } else if (response.status == 201) {
             loadingRemove(loading);
             list();
-            return createTopModal('Exportar Reservas', data.message, 'text-bg-success');
+            return createTopModal('Exportar Agendamento', data.message, 'text-bg-success');
         }
         
         let totalPrizes = 0;

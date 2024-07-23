@@ -45,7 +45,7 @@ const login = async (request, response) => {
     }
 }
 
-const getSpaces = async (request, response) => {
+const getOngs = async (request, response) => {
     //request example = { name: 'Quadra', status: '1', type: 'Salão de Festas' }
     const data = {};
 
@@ -69,8 +69,8 @@ const getSpaces = async (request, response) => {
 
 }
 
-const getSpace = async (request, response) => {
-    //request example = .../administrator/getSpace?id=1
+const getOng = async (request, response) => {
+    //request example = .../administrator/getOng?id=1
     const data = request.query.id;
     
     if (!data) {
@@ -87,7 +87,7 @@ const getSpace = async (request, response) => {
     return response.status(200).json({ message: '', space: space });
 }
 
-const addSpace = async (request, response) => {
+const addOng = async (request, response) => {
     /*request example = {
         name: 'Lugar Diferente',
         address: 'Av. Dom Pedro, 131',
@@ -98,6 +98,7 @@ const addSpace = async (request, response) => {
         status: 1,
         type: 'Área de Lazer',
         prize: 250,
+        contact: 'ong_testHubs@gmail.com',
         description: 'Um lugar diferente',
         image: {
             0: 'https://url.example1',
@@ -109,7 +110,7 @@ const addSpace = async (request, response) => {
     const decodedToken = await decodedWebToken(jwt);   
     const data = {};
 
-    const spaceArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'description'];
+    const spaceArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'contact', 'description'];
     for (const item of spaceArr) {
         if (request.body[item] == '' || request.body[item] == undefined || request.body[item] == null) {
             return response.status(400).json({ message: 'Os campos precisam está devidamente setados.' });
@@ -118,7 +119,7 @@ const addSpace = async (request, response) => {
         data[item] = request.body[item];
     }
 
-    insertLog('logs_admin', decodedToken.userData.id, 'ADDSPACE', data);
+    insertLog('logs_admin', decodedToken.userData.id, 'ADDONG', data);
 
     insertSpace(data);
 
@@ -155,7 +156,7 @@ const updateStatus = async (request, response) => {
     
 }
 
-const editSpace = async (request, response) => {
+const editOng = async (request, response) => {
     /*request example = {
         id: '3',
         name: 'Lugar Diferente',
@@ -167,6 +168,7 @@ const editSpace = async (request, response) => {
         status: 1,
         type: 'Área de Lazer',
         prize: 299,
+        contact: 'teste@gmail.teste.com',
         description: 'Um lugar muito diferente'
         image: {
             0: 'https://url.example1',
@@ -177,7 +179,7 @@ const editSpace = async (request, response) => {
     const decodedToken = await decodedWebToken(jwt);
     const data = request.body;
 
-    const spaceArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'description'];
+    const spaceArr = ['name', 'address', 'city', 'state', 'zip_code', 'capacity', 'status', 'type', 'image', 'prize', 'contact', 'description'];
     for (const item of spaceArr) {
         if (request.body[item] == '' || request.body[item] == undefined || request.body[item] == null) {
             return response.status(400).json({ message: 'Os campos precisam está devidamente setados.' });
@@ -191,7 +193,7 @@ const editSpace = async (request, response) => {
         return response.status(400).json({ message: 'ONG não encontrada!' });
     }
 
-    insertLog('logs_admin', decodedToken.userData.id, 'EDITSPACE', data);
+    insertLog('logs_admin', decodedToken.userData.id, 'EDITONG', data);
 
     updateSpace(data);
 
@@ -247,10 +249,10 @@ const getReserves = async (request, response) => {
 
 module.exports = {
     login,
-    getSpaces,
-    getSpace,
-    addSpace,
+    getOngs,
+    getOng,
+    addOng,
     updateStatus,
-    editSpace,
+    editOng,
     getReserves
 }

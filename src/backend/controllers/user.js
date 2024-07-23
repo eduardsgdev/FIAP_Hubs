@@ -206,7 +206,7 @@ const changePassword = async (request, response) => {
     
 }
 
-const getSpaces = async (request, response) => {
+const getOngs = async (request, response) => {
     //request example = { name: 'Quadr', capacity: 50, type: 'Salão de Festas' }
     const data = {}
 
@@ -230,7 +230,7 @@ const getSpaces = async (request, response) => {
     return response.status(200).json({ message: 'Lista de ONGs', spaces: spaces });
 }
 
-const getSpace = async (request, response) => {
+const getOng = async (request, response) => {
     //request example = { id: 1 }
     const data = request.body;
 
@@ -500,8 +500,8 @@ module.exports = {
     login,
     resetPassword,
     changePassword,
-    getSpaces,
-    getSpace,
+    getOngs,
+    getOng,
     getReserves,
     getReserve,
     reserveCancel,

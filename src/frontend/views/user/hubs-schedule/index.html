@@ -15,7 +15,7 @@
 <body class="body-booking-schedule">
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
-            <img id="img-space" src="../../../imgs/space.png" onclick="window.location.href = '../space-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <img id="img-hub" src="../../../imgs/hubs.png" onclick="window.location.href = '../hubs-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
             <div class="d-flex justify-content-end" style="font-size: x-large;">
                 <ul class="navbar-nav me-auto">
                     <li class="d-block d-inline-flex m-3">
@@ -101,7 +101,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="input-group m-2 d-flex justify-content-end">
-                                <button type="button" id="clean-button" class="btn m-1 text-white d-flex" onclick="window.location.href = '../space-list/index.html';">
+                                <button type="button" id="clean-button" class="btn m-1 text-white d-flex" onclick="window.location.href = '../hubs-list/index.html';">
                                     <i class="bi bi-arrow-left mt-1 me-2 text-white" style="line-height: 0;"></i>Não Quero</button>
                                 <button type="submit" id="submit-button" class="btn m-1 text-white d-flex">
                                     <i class="bi bi-floppy mt-1 me-2 text-white" style="line-height: 0;"></i>Voluntariar</button>
@@ -144,7 +144,7 @@ var prize = document.getElementById('prize');
 function getSpace() {
     if (!spaceId || spaceId == 0) {
         setTimeout(() => {
-            window.location.href = '../space-list/index.html';
+            window.location.href = '../hubs-list/index.html';
         }, 2000);
         return createTopModal('Voluntariar', 'Indisponível!', 'text-bg-danger');
     }
@@ -162,7 +162,7 @@ function getSpace() {
         body: JSON.stringify(body)
     }
 
-    fetch(api + '/src/backend/controllers/user/getSpace', requestOptions)
+    fetch(api + '/src/backend/controllers/user/getOng', requestOptions)
     .then(async response => {
         const data = await response.json();
         

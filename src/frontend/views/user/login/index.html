@@ -12,7 +12,7 @@
 <body class="body-user">
     <div class="img-inicio-user">
         <div class="box-background-content">
-            <img src="../../../imgs/space.png" class="logo-user img-fluid d-block" alt="Logo branca da HandsHub">
+            <img src="../../../imgs/hubs.png" class="logo-user img-fluid d-block" alt="Logo branca da HandsHub">
             <div class="logo-txt mb-4">Conectando <b>mãos</b> que acolhem</div>
         </div>
     </div>
@@ -79,7 +79,7 @@ form.addEventListener('submit', (event) => {
         const feedback = await response.json();
         if (response.status == 200) {
             setTimeout(() => {
-                window.location.href = '../space-list/index.html';
+                window.location.href = '../hubs-list/index.html';
             }, 1000);
             localStorage.setItem('tokenUserFiap', feedback.authorization.token);
             localStorage.setItem('email', feedback.email);

@@ -12,7 +12,7 @@
 <body class="body-space-list">
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
-            <img id="img-space" src="../../../imgs/space.png" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <img id="img-hub" src="../../../imgs/hubs.png" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Hubs">
             <div class="d-flex justify-content-end" style="font-size: x-large;">
                 <ul class="navbar-nav me-auto">
                     <li class="d-block d-inline-flex m-3">
@@ -31,7 +31,7 @@
     </nav>
     <header>
         <div class="ms-1 me-1 mt-4">
-            <div class="container d-flex" id="filters-space-list">
+            <div class="container d-flex" id="filters-hubs-list">
                 <div class="input-group m-1">
                     <input type="text" class="form-control" id="search-input" placeholder="Busque pelo nome">
                     <i class="input-group-text bi bi-search"></i> 
@@ -111,14 +111,14 @@ function list() {
     }
     
     loadingAdd(loading);
-    fetch(api + '/src/backend/controllers/user/getSpaces', requestOptions)
+    fetch(api + '/src/backend/controllers/user/getOngs', requestOptions)
     .then(async response => {
         const data = await response.json();
         
-        verifyToken('Listar Espaços', data.message, response.status);
+        verifyToken('Listar ONGs', data.message, response.status);
 
         if (response.status == 400) {
-            return createTopModal('Listar Espaços', data.message, 'text-bg-danger');
+            return createTopModal('Listar ONGs', data.message, 'text-bg-danger');
         }
 
         //View control structure
