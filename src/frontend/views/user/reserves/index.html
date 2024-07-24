@@ -12,7 +12,7 @@
 <body class="body-reserves">
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
-            <img id="img-hub" src="../../../imgs/hubs.png" onclick="window.location.href = '../hubs-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Space">
+            <img id="img-hub" src="../../../imgs/hubs.png" onclick="window.location.href = '../hubs-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Handshub">
             <div class="d-flex justify-content-end" style="font-size: x-large;">
                 <ul class="navbar-nav me-auto">
                     <li class="d-block d-inline-flex m-3">
@@ -39,7 +39,7 @@
         <h2 class="ms-3 mt-5">Histórico: </h2>
         <div class="d-flex justify-content-center">
             <div id="list-reserves-user-2" class="mt-5 ms-2 me-4 d-block w-100 ">
-                <!-- Here is the array with inactives the spaces -->
+                <!-- Here is the array with inactives the hubs -->
             </div>
         </div>
     </div>
@@ -171,8 +171,8 @@ function isActive(status, timeStartReserve = false) {
 function editReserve(cards) {
     Array.from(cards).forEach(reserve => {
         reserve.addEventListener('click', () => {
-            let spaceAndReserveId = reserve.id;
-            let parts = spaceAndReserveId.split('-');
+            let ongAndReserveId = reserve.id;
+            let parts = ongAndReserveId.split('-');
             if (reserve.classList.contains('btn')) {
                 window.location.href = `../hubs-schedule/index.html?id=${parts[0]}&reserve=${parts[1]}`;
             }

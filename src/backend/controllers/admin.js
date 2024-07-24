@@ -56,6 +56,10 @@ const getOngs = async (request, response) => {
         data.type = request.body.type;
     }
 
+    if (request.body.city != '') {
+        data.city = request.body.city;
+    }
+
     const name = request.body.name;
 
     const ongs = await listOngs(data, name);

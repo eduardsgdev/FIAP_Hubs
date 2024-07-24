@@ -219,6 +219,10 @@ const getOngs = async (request, response) => {
         data.type = request.body.type;
     }
 
+    if (request.body.city != '') {
+        data.city = request.body.city;
+    }
+
     const name = request.body.name;
     
     data.status = 1;
@@ -496,6 +500,22 @@ const editReserve = async (request, response) => {
 
 }
 
+const getProfile = async (request, response) => {
+    const jwt = request.headers['authorization'];
+    const decodedToken = await decodedWebToken(jwt);
+
+    if (!jwt || !decodedToken) {
+        return response.status(400).json({ message: 'Token não encontrado' });
+    }
+
+    const profile = {};
+
+    profile.name = decodedToken.userData.name;
+    profile.email = decodedToken.userData.login;
+
+    return response.status(200).json({ message: 'Perfil', profile: profile });
+}
+
 module.exports = {
     addUser,
     login,
@@ -507,5 +527,6 @@ module.exports = {
     getReserve,
     reserveCancel,
     addReserve,
-    editReserve
+    editReserve,
+    getProfile
 }

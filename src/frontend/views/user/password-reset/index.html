@@ -12,7 +12,7 @@
 <body class="body-user">
     <div class="img-inicio-user">
         <div class="box-background-content">
-            <img src="../../../imgs/hubs.png" class="logo-user img-fluid d-block" alt="Logo Branca da Space.">
+            <img src="../../../imgs/hubs.png" class="logo-user img-fluid d-block" alt="Logo Branca da HandsHub.">
             <div class="logo-txt mb-4">Conectando <b>mãos</b> que acolhem</div>
         </div>
     </div>
@@ -53,7 +53,7 @@ const getValueQueryString = (nameParameter) => queryString.get(nameParameter);
 const uniqId = getValueQueryString('id');
 
 if (uniqId && uniqId.length == 36) {
-    document.title = 'Alterar Senha - Space';
+    document.title = 'Alterar Senha - Handshub';
     subtitle.textContent = 'Digite uma nova senha'
     document.getElementById('input-email').remove();
     buttonSubmit.disabled = true;

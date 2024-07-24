@@ -2,7 +2,7 @@
   <h1 align="center">
     <br />
     <a href="#">
-      <img src= "https://mqkjxvrsegwmaotlfkjl.supabase.co/storage/v1/object/public/images/handshubs.jpeg" alt="Space" style="width: 100%">
+      <img src= "https://mqkjxvrsegwmaotlfkjl.supabase.co/storage/v1/object/public/images/handshubs.jpeg" alt="Handshub" style="width: 100%">
     </a>
   </h1>
 </div>

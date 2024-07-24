@@ -28,6 +28,10 @@
                     <input type="text" class="form-control" id="search-input" placeholder="Busque Pelo Nome">
                     <i class="input-group-text bi bi-search"></i> 
                 </div>
+                <div class="input-group m-1">
+                    <input type="text" class="form-control" id="search-city" placeholder="Busque Por Localização">
+                    <i class="input-group-text bi bi-geo-alt"></i> 
+                </div>
                 <select class="form-select m-1" aria-label="Default" id="select-status">
                     <option value="all" selected>Situação</option>
                     <option value="1">Ativo</option>
@@ -98,11 +102,13 @@ function list() {
     var name = document.getElementById('search-input').value;
     var type = document.getElementById('select-type').value;
     var status = document.getElementById('select-status').value;
+    var city = document.getElementById('search-city').value;
 
     const body = {
         name: name,
         status: status,
-        type: type
+        type: type,
+        city: city
     }
 
     const requestOptions = {
@@ -161,7 +167,7 @@ function list() {
         Array.from(arrayStatusBtns).forEach(editStatus);
         
         var arrayEditBtns = document.getElementsByClassName('btn-edit');
-        Array.from(arrayEditBtns).forEach(redirectToEditSpace);
+        Array.from(arrayEditBtns).forEach(redirectToEditOng);
     })
 }list();
 
@@ -178,13 +184,13 @@ searchBtn.addEventListener('click', () => {
 function editStatus(statusBtn) {
     statusBtn.addEventListener('click', () => {
         let statusOng = statusBtn.getAttribute('status');
-        const spaceId = statusBtn.getAttribute('id');
+        const ongId = statusBtn.getAttribute('id');
 
         let status = '';
         statusOng == 'Ativo' ?  status = 0 :  status = 1;
 
         const body = {
-            id: spaceId,
+            id: ongId,
             status: status
         }
 
@@ -204,7 +210,7 @@ function editStatus(statusBtn) {
             const data = await response.json();
             verifyToken('Atualizar Status', data.message, response.status);
             
-            let iconBtn = document.getElementById(`icon-btn-${spaceId}`);
+            let iconBtn = document.getElementById(`icon-btn-${ongId}`);
             if (statusOng == 'Ativo') {
                 let situation = statusBtn.parentElement.previousElementSibling;
                 iconBtn.classList.remove('bi-check2-circle' ,'text-success');
@@ -225,7 +231,7 @@ function editStatus(statusBtn) {
     });
 }
 
-function redirectToEditSpace(hubsBtn) {
+function redirectToEditOng(hubsBtn) {
     hubsBtn.addEventListener('click', () => {
         window.location.href = `../hubs-edit/index.html?id=${hubsBtn.id}`;
     });
