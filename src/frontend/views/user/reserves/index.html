@@ -12,15 +12,16 @@
 <body class="body-reserves">
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
-            <img id="img-hub" src="../../../imgs/hubs.png" onclick="window.location.href = '../hubs-list/index.html';" class="img-fluid w-25" style="min-height: 50px; min-width: 150px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Handshub">
+            <img id="img-hub" src="../../../imgs/hubs.png" onclick="window.location.href = '../hubs-list/index.html';" class="img-fluid w-25" style="min-width: 120px; max-height: 5vh; max-width: 30vh;" alt="Logo em branca da Handshub">
             <div class="d-flex justify-content-end" style="font-size: x-large;">
                 <ul class="navbar-nav me-auto">
-                    <li class="d-block d-inline-flex m-3">
+                    <li class="d-block d-inline-flex m-2">
+                        <div id="profile"></div>
                         <a id="user-reserves">
                             <i class="bi bi-luggage text-primary d-flex justify-content-center pointer" id="bag"></i>
                             <span class="d-flex text-primary mt-1" style="font-size: small;">Minhas ONGs</span>
                         </a>
-                        <a id="user-logout" class="ms-3" onclick="localStorage.removeItem('tokenUserFiap'); window.location.href = '../login/index.html';" style="text-decoration: none;">
+                        <a id="user-logout" class="ms-2" onclick="localStorage.removeItem('tokenUserFiap'); window.location.href = '../login/index.html';" style="text-decoration: none;">
                             <i class="bi bi-box-arrow-right text-white d-flex justify-content-center pointer"></i>
                             <span class="d-flex text-white d-flex justify-content-center me-2 mt-1" style="font-size: small;">Sair</span>
                         </a>
@@ -57,6 +58,7 @@ import { createTopModal } from '../../../components/modal.js';
 import { cleanInputsArray } from '../../../util/treatmentInputs.js';
 import { verifyToken } from '../../../util/verifyToken.js';
 import { brazilianDate } from '../../../util/dateFormater.js';
+import { profile } from '../../../components/profile.js';
 
 const token = localStorage.getItem('tokenUserFiap');
 
@@ -64,6 +66,7 @@ var deckCardsActives = document.getElementById('list-reserves-user');
 var deckCardsInactives = document.getElementById('list-reserves-user-2');
 var loading = document.getElementById('loading');
 var loadingMoreBtn = document.getElementById('loading-more');
+var profileElement = document.getElementById('profile');
 
 function listReserves() {
     deckCardsActives.innerHTML = '';
@@ -236,5 +239,7 @@ function uiInfoToCards(elementsActives, elementsHistory) {
         ? elementsHistory.innerHTML = `<div class="alert alert-primary ms-3 bi bi-info-circle" role="alert"> Você não possui histórico!</div>`
         : '';
 }
+
+profile(profileElement)
         
 </script>
