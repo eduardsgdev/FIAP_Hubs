@@ -21,7 +21,7 @@ export function profile(element) {
         const menu = `<div class="me-2">
                         <i class="bi bi-person-circle text-white d-flex justify-content-center data-bs-toggle="tooltip" 
                         title="${data.profile.email}"></i>
-                        <span class="d-flex text-white mt-1" style="font-size: small;">${data.profile.name}</span>
+                        <span class="d-flex text-white mt-1" style="font-size: small;">${data.profile.name.split(" ")[0]}</span>
                     </div>`;
         element.innerHTML = menu;
     }).catch((error) => {
