@@ -393,13 +393,6 @@ const addReserve = async (request, response) => {
     data.user_id = decodedToken.userData.id;
     data.qtd_hours = diff.hours();
 
-    const selectReserve = await checkOngAvailable(data.ong_id, data.start_reservation, data.final_reservation);
-    const reserve = selectReserve[0];    
-
-    if (reserve) {
-        return response.status(400).json({ message: 'Já existe um voluntariado para esta ONG no periodo solicitado.' });
-    }
-
     insertLog('logs_user', decodedToken.userData.id, 'ADDRESERVE', data);
 
     addUserReserve(decodedToken.userData.id, data);
@@ -407,10 +400,10 @@ const addReserve = async (request, response) => {
     sendEmail(
         data.email, 
         'HandsHub - Agendamento de Voluntariado', 
-        `Seu voluntariado ${ong[0].name} foi concluído com sucesso, este email será nosso nosso canal de contato para este voluntariado!
+        `Seu voluntariado á ONG ${ong[0].name} foi concluído com sucesso, este email será nosso nosso canal de contato para este voluntariado!
         
         Atenciosamente, Grupo Q Fiap`,
-        );
+    );
 
     return response.status(201).json({ message: 'Sua inscrição como voluntário foi concluída com sucesso.' });
 
@@ -477,13 +470,6 @@ const editReserve = async (request, response) => {
     data.total_prize = ong[0].prize * diff.hours();
     data.qtd_hours = diff.hours();
 
-    const selectAlreadyReserve = await checkOngAvailable(reserve.spaces.id, data.start_reservation, data.final_reservation);
-    const alreadyReserve = selectAlreadyReserve[0];    
-
-    if (alreadyReserve && alreadyReserve.user_id != decodedToken.userData.id) {
-        return response.status(400).json({ message: 'Já existe um voluntariado para esta ONG no periodo solicitado.' });
-    }
-
     insertLog('logs_user', decodedToken.userData.id, 'EDITRESERVE', data);
 
     updateReserve(reserve.id, data);
@@ -491,10 +477,10 @@ const editReserve = async (request, response) => {
     sendEmail(
         data.email, 
         'HandsHub - Agendamento de Voluntariado',
-        `O voluntariado ${ong[0].name} foi editado com sucesso.
+        `O voluntariado á ONG ${ong[0].name} foi editado com sucesso.
         
         Atenciosamente, Grupo Q Fiap`,
-        );
+    );
 
     return response.status(200).json({ message: 'Seu voluntariado foi editado com sucesso.' });
 

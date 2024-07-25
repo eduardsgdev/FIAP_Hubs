@@ -70,7 +70,7 @@ const addUserReserve = (userID, insertData) => {
         final_reservation: insertData.final_reservation,
         reserved_hours: insertData.qtd_hours,
         user_id: userID,
-        space_id: insertData.space_id,
+        space_id: insertData.ong_id,
         status: 1,
         responsible_contact: insertData.email,
         total_prize: insertData.total_prize
