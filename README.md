@@ -12,7 +12,7 @@
 
 Este projeto denominado "Hackathon" englobará os conhecimentos obtidos em todas as disciplinas do curso de Coding & Tech Journey From User to Creator da FIAP. A solução consiste em um sistema que conecta ONGs e Voluntários, com interface amigável. O administrador poderá cadastrar e gerenciar todas as ONGs, já o usuário poderá visualizar as ONGs cadastradas, se increver como voluntário e acessar suas incrições.
 
-## [VÍDEO SOBRE AS FUNÇÕES SOLICITADAS NO TECH CHALLENGE](LINK)
+## [VÍDEO SOBRE AS FUNÇÕES SOLICITADAS NO TECH CHALLENGE](https://drive.google.com/file/d/1J4sDXKyrIMr8RvWXJgYhJ9QbjK5v0O0b/view?usp=sharing)
 
 ## Como startar Localmente
 
